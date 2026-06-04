@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Япония · 11 дней · 7–17 октября</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4efe6;--ink:#21201c;--vermilion:#c8462b;--vermilion-deep:#9e3120;
+    --sumi:#2c2a26;--gold:#b08a3e;--line:#d8cfbf;
+    --c-osaka:#d4762a;--c-nara:#5a8b4c;--c-kyoto:#c8462b;--c-tokyo:#6a4a8c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Zen Kaku Gothic New',sans-serif;background:var(--paper);color:var(--ink);overflow:hidden}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.035;
+    background-image:radial-gradient(var(--ink) .5px,transparent .5px);background-size:4px 4px}
+  .app{display:flex;height:100vh;width:100vw}
+  .panel{width:400px;flex:none;height:100%;overflow-y:auto;background:var(--paper);
+    border-right:1px solid var(--line);box-shadow:4px 0 24px rgba(0,0,0,.06);z-index:500}
+  .panel::-webkit-scrollbar{width:8px}
+  .panel::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+  .masthead{padding:26px 26px 22px;background:var(--sumi);color:var(--paper);position:relative;overflow:hidden}
+  .masthead::after{content:"旅";position:absolute;right:-10px;top:-30px;font-family:'Shippori Mincho',serif;
+    font-size:160px;font-weight:800;color:rgba(244,239,230,.06);line-height:1}
+  .kicker{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:10px}
+  .masthead h1{font-family:'Shippori Mincho',serif;font-weight:800;font-size:30px;line-height:1.15;letter-spacing:.01em}
+  .masthead .dates{margin-top:10px;font-size:13px;color:var(--gold);font-weight:700;letter-spacing:.04em}
+  .masthead .route{margin-top:8px;font-size:13px;color:rgba(244,239,230,.7);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .masthead .route b{color:var(--paper);font-weight:700}
+  .masthead .route span{color:var(--vermilion);font-weight:700}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;padding:14px 26px;border-bottom:1px solid var(--line);font-size:12px;font-weight:500}
+  .legend i{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
+  .days{padding:8px 0 40px}
+  .day{border-bottom:1px solid var(--line);padding:16px 22px;cursor:pointer;transition:background .2s}
+  .day:hover{background:rgba(200,70,43,.05)}
+  .day.active{background:rgba(200,70,43,.08);box-shadow:inset 4px 0 0 var(--vermilion)}
+  .day-head{display:flex;align-items:baseline;gap:12px}
+  .day-num{font-family:'Shippori Mincho',serif;font-weight:800;font-size:13px;color:#fff;background:var(--sumi);
+    width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:2px}
+  .day-date{font-size:11px;letter-spacing:.1em;font-weight:700;color:var(--vermilion-deep);text-transform:uppercase}
+  .day-title{font-family:'Shippori Mincho',serif;font-weight:700;font-size:16px;line-height:1.3;margin-top:2px}
+  .day-city{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-top:3px}
+  .stops{margin:12px 0 0 42px;display:flex;flex-direction:column;gap:12px}
+  .stop{background:#fff;border:1px solid var(--line);border-left:3px solid var(--c-kyoto);
+    border-radius:9px;overflow:hidden;box-shadow:0 2px 7px rgba(0,0,0,.06)}
+  .thumb{width:100%;height:140px;object-fit:cover;display:block;background:#e7e0d2}
+  .thumb-fb{width:100%;height:140px;display:flex;align-items:center;justify-content:center;
+    font-size:46px;color:rgba(255,255,255,.92);background:linear-gradient(135deg,#3d7ea6,#6a4a8c)}
+  .stop .b{padding:10px 13px 13px}
+  .stop .s-name{font-weight:700;font-size:14px;line-height:1.25}
+  .stop .s-note{font-size:12px;color:#6b665c;line-height:1.45;margin-top:4px}
+  .stop a{display:inline-block;margin-top:8px;color:var(--vermilion-deep);font-size:11.5px;font-weight:700;
+    text-decoration:none;border-bottom:1px solid transparent}
+  .stop a:hover{border-bottom-color:var(--vermilion-deep)}
+  .foot{padding:18px 26px;font-size:11.5px;color:#8a8478;line-height:1.5}
+  #map{flex:1;height:100%;background:#cdd9d3;z-index:1}
+  .leaflet-container{font-family:'Zen Kaku Gothic New',sans-serif}
+  .pin{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50% 50% 50% 0;
+    transform:rotate(-45deg);border:2.5px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.35);
+    font-weight:800;font-size:12px;color:#fff;font-family:'Shippori Mincho',serif}
+  .pin span{transform:rotate(45deg)}
+  .leaflet-popup-content-wrapper{border-radius:6px;box-shadow:0 6px 24px rgba(0,0,0,.2)}
+  .leaflet-popup-content{margin:0;font-size:13px;line-height:1.5;width:230px!important}
+  .pop-img{width:100%;height:130px;object-fit:cover;display:block}
+  .pop-fb{width:100%;height:130px;display:flex;align-items:center;justify-content:center;font-size:44px;
+    color:#fff;background:linear-gradient(135deg,#3d7ea6,#6a4a8c)}
+  .pop-b{padding:11px 14px 13px}
+  .pop-day{font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--vermilion)}
+  .pop-name{font-family:'Shippori Mincho',serif;font-weight:700;font-size:16px;margin:3px 0 5px}
+  .pop-note{color:#5f5a50;margin-bottom:8px;font-size:12.5px}
+  .pop-link{color:var(--vermilion-deep);font-weight:700;text-decoration:none;font-size:12px}
+  .toggle{display:none;position:fixed;z-index:1000;bottom:20px;left:50%;transform:translateX(-50%);
+    background:var(--sumi);color:var(--paper);border:none;padding:13px 22px;border-radius:40px;
+    font-weight:700;font-size:14px;font-family:'Zen Kaku Gothic New',sans-serif;
+    box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;letter-spacing:.03em}
+  @media (max-width:760px){
+    .app{flex-direction:column}
+    .panel{width:100%;height:100%;position:absolute;inset:0;transition:transform .35s cubic-bezier(.4,0,.2,1)}
+    .panel.hidden{transform:translateY(100%)}
+    #map{height:100%;width:100%}
+    .toggle{display:block}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="panel" id="panel">
+    <div class="masthead">
+      <div class="kicker">Маршрут · 11 дней</div>
+      <h1>Япония<br>от Кансая до Токио</h1>
+      <div class="dates">7 – 17 октября</div>
+      <div class="route">
+        <b>Осака</b><span>→</span><b>Нара</b><span>→</span><b>Киото</b>♨️<span>→</span><b>Токио</b>
+      </div>
+    </div>
+    <div class="legend">
+      <div><i style="background:var(--c-osaka)"></i>Осака</div>
+      <div><i style="background:var(--c-nara)"></i>Нара</div>
+      <div><i style="background:var(--c-kyoto)"></i>Киото · онсэн</div>
+      <div><i style="background:var(--c-tokyo)"></i>Токио · Камакура</div>
+    </div>
+    <div class="days" id="days"></div>
+    <div class="foot">
+      Нажмите на день или точку, чтобы приблизить карту. Ссылки «Открыть в картах» ведут в Google Maps — удобно строить маршрут на месте.<br><br>
+      Дни недели указаны для октября 2026 г. Фото и тайлы карты подгружаются из интернета.
+    </div>
+  </aside>
+  <div id="map"></div>
+</div>
+<button class="toggle" id="toggle">🗺 Показать карту</button>
+
+<script>
+const COLORS={osaka:'#d4762a',nara:'#5a8b4c',kyoto:'#c8462b',tokyo:'#6a4a8c'};
+const P='https://lh3.googleusercontent.com/place-photos/';
+
+const DAYS=[
+ {n:1,date:'7 окт · ср · вечер',city:'Осака',ck:'osaka',title:'Вечерний прилёт',stops:[
+   {name:'Дотонбори',lat:34.6686471,lng:135.5030983,note:'Прилёт в Кансай вечером, заселение. Лёгкий старт: ужин и вечерняя прогулка по неоновому Дотонбори — он как раз лучше всего смотрится ночью.',gid:'16446419638008461065',img:P+'AJRVUZMBFrzk7SROBGrKJJbZAz-oLEycGWymXLnpanoHS4OxMBYrwpbJVPC8GdFDAwEISsZgLpYlmyueaGZkh1VftWomf5rOiXE6dzrbtm4isSn1w_xpCmD91IQxHehRJKKFi06umQIEjaWY08szdg=w600-h400'}]},
+ {n:2,date:'8 окт · чт',city:'Осака',ck:'osaka',title:'Замок и парки',stops:[
+   {name:'Осакский замок',lat:34.6872571,lng:135.5258546,note:'С утра, на свежие силы. Парк вокруг бесплатный, внутри музей и смотровая.',gid:'1081374622389182017',img:P+'AJRVUZN0RgMeK-x8yiD-O8S9dQ33IuqCpCpXuxrNZVslbGIjIldbFQSnUq0c-uygkh1wNOBgNcou_mjBI1nOEusPfdApPOsBbpxWbZ7RZZ5vw4uG4kKURq4Qb8N9j5vfiOnQa6iq0Lz6A8G85LSFY2rj6hORpw=w600-h400'},
+   {name:'Universal Studios Japan',lat:34.6656768,lng:135.4323185,note:'Если хочется парка — это отдельный полный день (тогда замок утром бегло или в другой день). Спокойнее: Синсэкай + аквариум Кайюкан.',gid:'3892796888607511210',img:P+'AJRVUZMbJHuXpHqKtavgoyHZozgW_78x4Yu31QcAu0GVC-8uzBGNOJ4CsghcfdvUA5dcr9jGJ9TuD-5niFpYXOQjFpWm6LIm-__r8ESC-XQ8zth-bCm_iALHCLQ0bFqUWLvwtgwu2Ii9PQ5_6x3UnQ=w600-h400'}]},
+ {n:3,date:'9 окт · пт',city:'Нара',ck:'nara',title:'Олени · переезд в Киото',stops:[
+   {name:'Парк Нара',lat:34.685047,lng:135.843012,note:'~45 мин из Осаки. Ручные олени кланяются за крекеры.',gid:'17972930374069941334',img:P+'AJRVUZN5TgeDSS5faoZkGQDIsth2pyQI16Gutrwg5QJAvV-OsS1l61gHh-EzQzBqWKLeCb_CoGxSo1WLMu_FccAjnLNQUFtPXsW1saQoJUSlfSnt14eC5oLLUbFb7LvxtjMFz40YMuCXjsA4KojDpyy7Td3jkA=w600-h400'},
+   {name:'Храм Тодай-дзи',lat:34.6889851,lng:135.8398158,note:'Гигантская статуя Будды. Вечером — переезд в Киото (~45 мин).',gid:'17911005107283377295',img:P+'AJRVUZPBTxBhh9u9GZdkrE_d2tLP7iZRZgPN0K36CYvevi2pJXksWqyoZn_Z4vy1JFk7HrABW0NppCyHlVy6CRNw2kDacfR--AJ6cpVpPVXASgkjZJAciQwNXx0pYizyXSHlIUM_ZC6wXSpNH7TxbWQ=w600-h400'}]},
+ {n:4,date:'10 окт · сб',city:'Киото',ck:'kyoto',title:'Тории и Хигасияма',stops:[
+   {name:'Фусими Инари',lat:34.9676945,lng:135.7791876,note:'Тысячи красных ворот. Приходите к открытию, до толп.',gid:'8870624639634301673',img:P+'AJRVUZM70RGMRzLOl3qGXrHqiHvTK4W1ya1mOQDJIngjpZW8p4zBDB24pCdSnoZb17zMfXuyLeIW2GQftDtix4Od6J6fKwsXuKKOENxGvX8Wlu6-__oq1422i7ruz_D4R_F6u32CUiHlxKBDesMAPQ=w600-h400'},
+   {name:'Киёмидзу-дэра',lat:34.9946662,lng:135.784661,note:'Терраса над городом, улочки Саннэн-зака, квартал Гион.',gid:'7111013964196361402',img:P+'AJRVUZNlzIwbBfy2O_Fhd49yD4Bu-jYTytiWHMC9KmDJNkGm3TOkxktEIq3eA2Uhr87bzakYqRIDXOssRF_mx5on6FBSEwo0RUIj2ImAq5suQsoe0EDMv9wLi40z07jNxhflbwF9dVy8_WgMUewSzybAPI2N=w600-h400'}]},
+ {n:5,date:'11 окт · вс',city:'Киото · Арасияма',ck:'kyoto',title:'Бамбук, Кинкаку-дзи и онсэн ♨️',stops:[
+   {name:'Бамбуковая роща Арасияма',lat:35.0168187,lng:135.6713013,note:'Тропа среди высокого бамбука, рядом парк обезьян.',gid:'18131488233213033693',img:P+'AJRVUZN2sBq6w2-mhmD_f8qi9OPg5d_nHatM3vDtqdz3QptPD7i5B8N25sy_MXbZEUH6rYA3M7FdcerYkacUgAlmvEryMHcXqH9uA3UmmRxvhkjAMM0obKwFNdDaUqIBx75i4zH4at3c9iA79WsOpBM=w600-h400'},
+   {name:'Кинкаку-дзи (Золотой павильон)',lat:35.03937,lng:135.7292431,note:'Покрытый золотом храм над прудом. Затем назад в Арасияму.',gid:'1073025677330113631',img:P+'AJRVUZNt7HoidLVQSLRVXaZWE80peznHcqMmu7MTrWtYbj5vLkAl_jmKRM75CDdM4Tam9CdgMcJrggs1OKbGiNVRfybwkgq_uxi0u1aQC40-VXT1n-oWaJsXRgNC_BvMfAuyMqMps0MG3LP9J_GERb4=w600-h400'},
+   {name:'Онсэн Arashiyama Kadensho ♨️',lat:35.0106897,lng:135.680376,note:'Ночёвка в рёкане: приватные ванны (ок. для татуировок), ужин-кайсэки, юката. У станции Арасияма.',fb:'♨️',url:'https://www.google.com/maps/search/?api=1&query=Arashiyama%20Onsen%20Kadensho&query_place_id=ChIJI2dp8VMHAWARJa-UMM12L1s'}]},
+ {n:6,date:'12 окт · пн',city:'Токио',ck:'tokyo',title:'Синкансэн · Асакуса',stops:[
+   {name:'Храм Сэнсо-дзи',lat:35.7147651,lng:139.7966553,note:'Утром синкансэн Киото→Токио (~2ч15м). Накамисэ, река Сумида, Skytree.',gid:'7785923974874169613',img:P+'AJRVUZOlO_-gy_s33PPDDlC7RpLFpoRJDTUfwsYOW3vlIUM3sbqvjHUc4CS8bxQ1ePP7BuHic6PCpQ5kqqSWNovelv1TZ8Gxv30QpKoa2oRAqv1GaKYNexiHPxElXZVHpq9K_G7E5mhdZVcpCE9g93g=w600-h400'}]},
+ {n:7,date:'13 окт · вт',city:'Токио',ck:'tokyo',title:'Сибуя и Харадзюку',stops:[
+   {name:'Святилище Мэйдзи',lat:35.6763976,lng:139.6993259,note:'Лесной оазис, рядом Харадзюку, парк Ёёги, улица Такэсита.',gid:'10361244767556222835',img:P+'AJRVUZNSXTVQ23sLepuw500aNnRmkIywlvndeTMldwWwxyQvogYK8jvIyaUHYu6ontvvx9wXUJZrwcLBFFktvYvLmScvP6nDeWvZGTuYJkBjb58qGnfq0hAadf1LvTYtuFSSnAcMWZTpk0G1IJEr58w=w600-h400'},
+   {name:'Перекрёсток Сибуя',lat:35.659482,lng:139.7005596,note:'Самый знаменитый переход мира. Вечером — неон и еда.',gid:'2370410330085837161',img:P+'AJRVUZNLxZRLOVbdSjV1gXCBKqfC4Ha9z_0hk_Eup7pTAiWYw6ycpvIUUSR4OcFBvo7B4qipc2b1ctelMR-D1M5ZTF13LYqKKolZhUSyZzJWk3yjU2akA5vyLR6oFb-CEic3Df7ua5MOkLbx9ae2rA=w600-h400'}]},
+ {n:8,date:'14 окт · ср',city:'Токио',ck:'tokyo',title:'Синдзюку и зелень',stops:[
+   {name:'Сад Синдзюку-Гёэн',lat:35.6851763,lng:139.7100517,note:'Закрыт по пн (ср — ок). Вечером — Омоидэ-Ёкотё, Голден-Гай.',gid:'7646744610971579015',img:P+'AJRVUZN-vF1i6W8Ugs2tgUjJ1v_2KNHKW_k-vPhOkniv_ZbIrDnaTd5HxbTTy1eJecjwcNYLfCfzCi9jflRd-gUVOxvVHfOwqcnh1fjW517rXntIyxn9qSTgP54cEQppITauHP4F9yamSPLdH8vK_cs=w600-h400'}]},
+ {n:9,date:'15 окт · чт',city:'Камакура',ck:'tokyo',title:'Поездка на день',stops:[
+   {name:'Большой Будда (Котоку-ин)',lat:35.3168145,lng:139.5357442,note:'~1 ч от Токио. 13-метровая статуя под небом. Альт.: Никко или DisneySea.',gid:'2216777826481991500',img:P+'AJRVUZMBxSvCGuoCvqtmFj0HXqxAAQbHqZwBEm7uUNI2KJrP12rtyARqyvQ17c49s83GlLJifYsLUIrvfF7du999pVRK4lIItZbfwO56O0eyJ9ycgdwlug4np1ALXG2cao9uzBJj6Qak_rD2JekLp-5ygCuOMA=w600-h400'}]},
+ {n:10,date:'16 окт · пт',city:'Токио',ck:'tokyo',title:'Рынок, центр и техно',stops:[
+   {name:'Рынок Тоёсу',lat:35.6440911,lng:139.784281,note:'Раннее утро — свежие суши и тунцовый аукцион. Закрыт ср/вс (пт — ок).',gid:'15474277121690448860',img:P+'AJRVUZODFolHKnQn5yPP8zlf_V-S0mrfxQd7iCVmNvI_8bcWZiAHaLD0ybK4vAQG9tfcEpGhz0rscCWp-jB_WfL6WP3RtFOwLgBASGIX_ffpA7XXrsQk3GvjlLIWG7laSCcixie1q7O7Cxn7wsJ4=w600-h400'},
+   {name:'Императорский дворец',lat:35.685175,lng:139.7527995,note:'Восточный сад бесплатный. Проверяйте часы — бывают выходные дни.',gid:'15067460005103824311',img:P+'AJRVUZNdq3IO0hrefrWvJ_FN6BQ3g_wpN_Vfdn1tSV0jXw1uJdZLYgRByh_aKNOAHBMHloYWkvh_698U0AYz99i1X1HG8qzCiELbz4aFjK0GjmyXZ7LpP10_K1Z6S6FehmXvPQiHPRxOTARYEW2tQw=w600-h400'},
+   {name:'Акихабара',lat:35.6996473,lng:139.7713703,note:'Электроника, аниме, игры. Альт.: teamLab (билеты заранее).',gid:'8588181514563389831',img:P+'AJRVUZOCXHy2Wz95RFFbs0CcuEOkwOtvIIfglqpgi4PAmHAfHRuEdZQyHmYEwuaiTLcm3KumJBKH5fcDGkxVM66AMcs4umkgXcEPSyiijLmrF-Hf_SMI5dJGi7y9qV-Bi3U01fG1jkFJpBasT3II=w600-h400'}]},
+ {n:11,date:'17 окт · сб',city:'Вылет',ck:'tokyo',title:'Вылет 11:00',stops:[
+   {name:'Аэропорт (Ханэда / Нарита)',lat:35.5493,lng:139.7798,note:'Рейс в 11:00. Из центра выезжайте к ~07:00–07:30 (Ханэда ~30–45 мин, Нарита ~1ч+). Уточните аэропорт вылета. Сувениры и завтрак — уже в терминале.',fb:'✈️',url:'https://www.google.com/maps/search/?api=1&query=Haneda+Airport+Tokyo'}]}
+];
+
+const map=L.map('map',{scrollWheelZoom:true}).setView([35.4,137.2],6);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19
+}).addTo(map);
+
+function linkFor(s){return s.url?s.url:('https://maps.google.com/?cid='+s.gid);}
+function fb(s){return s.fb?s.fb:'♨️';}
+function imgTagPopup(s){return s.img?`<img class="pop-img" src="${s.img}" alt="" loading="lazy">`:`<div class="pop-fb">${fb(s)}</div>`;}
+function imgTagCard(s){return s.img?`<img class="thumb" src="${s.img}" alt="" loading="lazy">`:`<div class="thumb-fb">${fb(s)}</div>`;}
+
+const markers={};const allPts=[];const routePts=[];
+DAYS.forEach(d=>{
+  const col=COLORS[d.ck];
+  d.stops.forEach(s=>{
+    routePts.push([s.lat,s.lng]);allPts.push([s.lat,s.lng]);
+    const icon=L.divIcon({className:'',
+      html:`<div class="pin" style="background:${col}"><span>${d.n}</span></div>`,
+      iconSize:[30,30],iconAnchor:[15,28],popupAnchor:[0,-28]});
+    const m=L.marker([s.lat,s.lng],{icon}).addTo(map);
+    m.bindPopup(
+      imgTagPopup(s)+
+      `<div class="pop-b">`+
+      `<div class="pop-day" style="color:${col}">День ${d.n} · ${d.date} · ${d.city}</div>`+
+      `<div class="pop-name">${s.name}</div>`+
+      `<div class="pop-note">${s.note}</div>`+
+      `<a class="pop-link" href="${linkFor(s)}" target="_blank" rel="noopener">Открыть в Google Maps →</a>`+
+      `</div>`);
+    markers[d.n]=markers[d.n]||[];markers[d.n].push(m);
+  });
+});
+L.polyline(routePts,{color:'#2c2a26',weight:2,opacity:.45,dashArray:'2,7',lineCap:'round'}).addTo(map);
+map.fitBounds(L.latLngBounds(allPts).pad(0.12));
+
+const daysEl=document.getElementById('days');
+DAYS.forEach(d=>{
+  const col=COLORS[d.ck];
+  const el=document.createElement('div');el.className='day';
+  el.innerHTML=
+    `<div class="day-head">
+       <div class="day-num">${d.n}</div>
+       <div>
+         <div class="day-date">${d.date}</div>
+         <div class="day-title">${d.title}</div>
+         <div class="day-city" style="color:${col}">${d.city}</div>
+       </div>
+     </div>
+     <div class="stops">`+
+     d.stops.map(s=>
+       `<div class="stop" style="border-left-color:${col}">
+          ${imgTagCard(s)}
+          <div class="b">
+            <div class="s-name">${s.name}</div>
+            <div class="s-note">${s.note}</div>
+            <a href="${linkFor(s)}" target="_blank" rel="noopener">Открыть в картах →</a>
+          </div>
+        </div>`).join('')+
+     `</div>`;
+  el.addEventListener('click',e=>{
+    if(e.target.tagName==='A'||e.target.tagName==='IMG')return;
+    document.querySelectorAll('.day').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active');
+    const pts=d.stops.map(s=>[s.lat,s.lng]);
+    if(pts.length===1){map.setView(pts[0],13);markers[d.n][0].openPopup();}
+    else{map.fitBounds(L.latLngBounds(pts).pad(0.6));}
+    if(window.innerWidth<=760)hidePanel();
+  });
+  daysEl.appendChild(el);
+});
+
+const panel=document.getElementById('panel');const toggle=document.getElementById('toggle');
+function hidePanel(){panel.classList.add('hidden');toggle.textContent='📋 Показать план';}
+function showPanel(){panel.classList.remove('hidden');toggle.textContent='🗺 Показать карту';}
+toggle.addEventListener('click',()=>{if(panel.classList.contains('hidden'))showPanel();else hidePanel();});
+</script>
+</body>
+</html>
