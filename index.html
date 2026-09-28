@@ -164,11 +164,10 @@ map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank
 
 // локальная подложка (папка tiles/, масштабы 4–9) лежит снизу и видна, если интернет-тайлы не грузятся
 L.tileLayer('tiles/{z}/{x}/{y}.png',{minZoom:0,maxZoom:19,minNativeZoom:4,maxNativeZoom:9,
-  bounds:[[30,128],[44,146]],attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
+  bounds:[[30,128],[44,146]],attribution:'&copy; OpenStreetMap'}).addTo(map);
 
-// подложки: если одна не грузится — переключаемся на следующую
+// подложки: если одна не грузится — переключаемся на следующую (CARTO не используем — требует API-ключ)
 const TILES=[
-  ['https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{subdomains:'abcd',attribution:'&copy; OpenStreetMap &copy; CARTO'}],
   ['https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap'}],
   ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{attribution:'&copy; Esri'}]
 ];
