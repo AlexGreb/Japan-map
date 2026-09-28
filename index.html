@@ -173,6 +173,23 @@
   .z-low .leaflet-tooltip.perm{display:none}
   .leaflet-control-zoom a{width:40px!important;height:40px!important;line-height:40px!important;font-size:20px!important;background:var(--card)!important;color:var(--ink)!important}
 
+  /* фильтр слоёв и «полезное рядом» */
+  #filters{position:fixed;top:10px;left:472px;right:70px;z-index:450;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px}
+  #filters::-webkit-scrollbar{display:none}
+  .fchip{flex:none;display:flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:20px;background:var(--card);color:var(--ink);
+    box-shadow:0 2px 8px rgba(0,0,0,.2);font-size:14px;font-weight:700;white-space:nowrap}
+  .fchip span{font-size:17px}
+  .fchip.off{background:var(--chip);color:var(--faint);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+  .fchip.off span{filter:grayscale(1);opacity:.5}
+  #uhint{position:fixed;top:60px;left:472px;z-index:450;background:var(--ink);color:var(--bg);font-size:14px;font-weight:600;padding:8px 14px;border-radius:12px;box-shadow:var(--shadow);max-width:calc(100vw - 490px)}
+  .uk{width:30px;height:30px;border-radius:9px;background:var(--c);border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-size:15px}
+  body:not([data-tab="map"]) #filters,body:not([data-tab="map"]) #uhint{display:none}
+  .rules{margin-top:12px;border-radius:14px;padding:12px 14px;background:var(--bad-bg);color:var(--bad-fg);font-size:15px}
+  .rules b{display:block;margin-bottom:4px}
+  .rules ul{padding-left:18px}
+  .rules li+li{margin-top:4px}
+  .etag{display:inline-block;font-size:13px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--chip);color:var(--ink)}
+
   /* ====== телефон ====== */
   @media (max-width:899px){
     #map{left:0;bottom:calc(var(--tabh) + env(safe-area-inset-bottom))}
@@ -187,6 +204,8 @@
     .grab{display:flex;justify-content:center;align-items:center;height:26px;flex:none;cursor:grab;touch-action:none}
     .grab span{width:48px;height:5px;border-radius:3px;background:var(--faint);opacity:.6}
     #phead{padding-top:2px}
+    #filters{left:10px;right:62px}
+    #uhint{left:10px;max-width:calc(100vw - 80px)}
     body[data-tab="map"] #phead h1{font-size:19px}
   }
   body:not([data-tab="map"]) #chips{display:none}
@@ -217,6 +236,8 @@
   <div id="body"></div>
 </aside>
 <div id="map"></div>
+<nav id="filters" aria-label="Что показывать на карте"></nav>
+<div id="uhint" hidden></div>
 
 <script src="data.js"></script>
 <script src="common.js"></script>
@@ -256,6 +277,7 @@ function plural(n,a,b,c){n=Math.abs(n)%100;const m=n%10;return n>10&&n<20?c:m===
 
 // ================= КАРТА =================
 let map=null,allLayer,dayLayer,legLayer,myMarker=null;
+EATS.forEach(e=>e.type='eat');
 function loadLeaflet(srcs,done){
   if(window.L)return done();
   if(!srcs.length){$('map').innerHTML='<div style="padding:40px;text-align:center">Не удалось загрузить карту — обновите страницу.</div>';return;}
@@ -281,10 +303,8 @@ function initMap(){
   const dark=()=>$('map').classList.toggle('dark-map',isDark());dark();document.addEventListener('themechange',dark);
   const zl=()=>$('map').classList.toggle('z-low',map.getZoom()<12);map.on('zoomend',zl);zl();
 
-  allLayer=L.layerGroup();dayLayer=L.layerGroup();legLayer=L.layerGroup().addTo(map);
-  DAYS.forEach(d=>d.places.forEach(s=>L.marker([s.lat,s.lng],{icon:mkIcon(s,d.n)}).addTo(allLayer)
-    .bindTooltip(`День ${d.n}: ${s.name}`,{className:'lbl',direction:'top',offset:[0,-22]}).on('click',()=>go(`map/d${d.n}-${s.i}`))));
-  Object.values(HOTELS).forEach(h=>{if(!h.tbd)L.marker([h.lat,h.lng],{icon:hotelIcon()}).addTo(allLayer).bindTooltip('🏨 '+h.name,{className:'lbl',direction:'top',offset:[0,-18]});});
+  allLayer=L.layerGroup();dayLayer=L.layerGroup();legLayer=L.layerGroup().addTo(map);usefulLayer=L.layerGroup().addTo(map);
+  map.on('moveend',()=>{clearTimeout(usefulT);usefulT=setTimeout(loadUseful,700);});
 
   // кнопка «где я»
   const Locate=L.Control.extend({options:{position:'topright'},onAdd(){
@@ -303,6 +323,9 @@ function initMap(){
       Object.values(CATS).map(c=>`<div><span class="d" style="--c:${c.color}">${c.icon}</span>${c.name}</div>`).join('')+
       `<div><span class="d" style="--c:#1c2026;border-radius:6px">🏨</span>Отель</div>`+
       `<div><span class="d" style="--c:#111418;font-weight:800;color:#fff">2</span>Цифра — порядок в дне<br>(в «Все дни» — номер дня)</div>`+
+      `<div class="h" style="margin-top:8px">🏪 Полезное рядом</div>`+
+      USEFUL.map(u=>`<div><span class="d" style="--c:${u.color};border-radius:8px">${u.icon}</span>${u.name}</div>`).join('')+
+      `<div class="muted small" style="display:block;max-width:220px">Банкоматы в 7-Eleven принимают иностранные карты</div>`+
       `<div style="justify-content:flex-end"><button style="font-weight:700;color:var(--accent)">Скрыть</button></div></div>`;
     // на компьютере подсказка раскрыта, на телефоне — свёрнута (чтобы не закрывала карту)
     let open=store.get('legend')?store.get('legend')==='1':!mobile();
@@ -320,18 +343,83 @@ function fit(pts,maxZoom){
   if(!map||!pts.length)return;
   map.fitBounds(L.latLngBounds(pts),{paddingTopLeft:[40,60],paddingBottomRight:[60,sheetH()+30],maxZoom:pts.length===1?15:(maxZoom||16)});
 }
-function showAllOnMap(){if(!map)return;dayLayer.clearLayers();legLayer.clearLayers();map.removeLayer(dayLayer);allLayer.addTo(map);
-  fit(DAYS.flatMap(d=>d.places.map(s=>[s.lat,s.lng])),9);}
-function showDayOnMap(d,sel){
-  if(!map)return;
-  map.removeLayer(allLayer);dayLayer.clearLayers();legLayer.clearLayers();dayLayer.addTo(map);
+// ---------- фильтр слоёв на карте ----------
+let FOn=(()=>{try{return JSON.parse(store.get('filters'))}catch(e){return null}})()||{sights:1,food:1,shop:1,eat:1,hotel:1,useful:0};
+const groupOf=type=>(FILTERS.find(f=>f.types.includes(type))||FILTERS[0]).id;
+const shown=s=>!!FOn[groupOf(s.type)];
+let mapState={mode:'all'};
+function drawFilters(){
+  $('filters').innerHTML=FILTERS.map(f=>`<button class="fchip${FOn[f.id]?'':' off'}" data-f="${f.id}"><span>${f.icon}</span>${f.label}</button>`).join('');
+  $('filters').querySelectorAll('button').forEach(b=>b.onclick=()=>{FOn[b.dataset.f]=FOn[b.dataset.f]?0:1;store.set('filters',JSON.stringify(FOn));
+    drawFilters();redrawMap();if(b.dataset.f==='useful'){usefulKey='';loadUseful();}});
+}
+function redrawMap(){if(mapState.mode==='all')showAllOnMap(true);else if(mapState.mode==='day')showDayOnMap(mapState.d,mapState.sel,true);}
+function hotelMarker(h,layer){L.marker([h.lat,h.lng],{icon:hotelIcon()}).addTo(layer).bindTooltip('🏨 '+h.name,{className:'lbl',direction:'top',offset:[0,-18]});}
+function eatMarker(e,layer,sel,perm){L.marker([e.lat,e.lng],{icon:mkIcon(e,null,sel===e),zIndexOffset:sel===e?1000:-100}).addTo(layer)
+  .bindTooltip('🍜 '+e.name,{className:'lbl'+(perm?' perm':''),direction:'top',offset:[0,-22],permanent:!!perm}).on('click',()=>go('map/eat-'+e.id));}
+
+function showAllOnMap(keep){
+  if(!map)return;mapState={mode:'all'};
+  map.removeLayer(dayLayer);if(!keep)legLayer.clearLayers();allLayer.clearLayers().addTo(map);
+  DAYS.forEach(d=>d.places.forEach(s=>{if(shown(s))L.marker([s.lat,s.lng],{icon:mkIcon(s,d.n)}).addTo(allLayer)
+    .bindTooltip(`День ${d.n}: ${s.name}`,{className:'lbl',direction:'top',offset:[0,-22]}).on('click',()=>go(`map/d${d.n}-${s.i}`));}));
+  if(FOn.eat)EATS.forEach(e=>eatMarker(e,allLayer,null));
+  if(FOn.hotel)Object.values(HOTELS).forEach(h=>{if(!h.tbd)hotelMarker(h,allLayer);});
+  if(!keep)fit(DAYS.flatMap(d=>d.places.map(s=>[s.lat,s.lng])),9);
+}
+function showDayOnMap(d,sel,keep){
+  if(!map)return;mapState={mode:'day',d,sel};
+  map.removeLayer(allLayer);dayLayer.clearLayers();if(!keep&&!sel)legLayer.clearLayers();dayLayer.addTo(map);
   const start=hotelOf(DAYS[d.n-2]),night=hotelOf(d);
   const line=[...(start?[[start.lat,start.lng]]:[]),...d.places.map(s=>[s.lat,s.lng])];
   L.polyline(line,{color:'#111418',weight:3,opacity:.45,dashArray:'4,8'}).addTo(dayLayer);
-  [start,night].forEach(h=>{if(h)L.marker([h.lat,h.lng],{icon:hotelIcon()}).addTo(dayLayer).bindTooltip('🏨 '+h.name,{className:'lbl',direction:'top',offset:[0,-18]});});
-  d.places.forEach(s=>L.marker([s.lat,s.lng],{icon:mkIcon(s,s.k,sel===s),zIndexOffset:sel===s?1000:0}).addTo(dayLayer)
-    .bindTooltip(s.name,{className:'lbl perm',direction:'top',offset:[0,-24],permanent:true}).on('click',()=>go(`map/d${d.n}-${s.i}`)));
-  if(!sel)fit([...line,...(night?[[night.lat,night.lng]]:[])]);
+  if(FOn.hotel)[start,night].forEach(h=>{if(h)hotelMarker(h,dayLayer);});
+  d.places.forEach(s=>{if(!shown(s)&&sel!==s)return;
+    L.marker([s.lat,s.lng],{icon:mkIcon(s,s.k,sel===s),zIndexOffset:sel===s?1000:0}).addTo(dayLayer)
+      .bindTooltip(s.name,{className:'lbl perm',direction:'top',offset:[0,-24],permanent:true}).on('click',()=>go(`map/d${d.n}-${s.i}`));});
+  EATS.filter(e=>e.day===d.n&&(FOn.eat||sel===e)).forEach(e=>eatMarker(e,dayLayer,sel,sel===e));
+  if(!sel&&!keep)fit([...line,...(night?[[night.lat,night.lng]]:[])]);
+}
+
+// ---------- «Полезное рядом»: комбини, банкоматы, аптеки… из OpenStreetMap ----------
+let usefulLayer,usefulT,usefulKey='',usefulAbort=null;
+const U=Object.fromEntries(USEFUL.map(u=>[u.id,u]));
+function usefulType(t){
+  const n=[t.name,t['name:en'],t.brand].join(' ');
+  if(/ドン・キホーテ|Don Qui|MEGAドン/i.test(n))return U.donki;
+  if(/ダイソー|DAISO/i.test(n))return U.daiso;
+  if(t.shop==='convenience')return U.konbini;
+  if(t.amenity==='atm')return U.atm;
+  if(t.amenity==='pharmacy'||t.shop==='chemist')return U.pharmacy;
+  if(t.amenity==='toilets')return U.toilets;
+  if(/locker/.test(t.amenity||''))return U.locker;
+  return null;
+}
+async function loadUseful(){
+  const hint=$('uhint');
+  if(!map||!FOn.useful||document.body.dataset.tab!=='map'){usefulLayer&&usefulLayer.clearLayers();usefulKey='';hint.hidden=true;return;}
+  if(map.getZoom()<15){usefulLayer.clearLayers();usefulKey='';hint.hidden=false;hint.textContent='🔍 Приблизьте карту — покажу комбини, банкоматы, аптеки рядом';return;}
+  const b=map.getBounds();const bb=[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].map(x=>x.toFixed(4)).join(',');
+  if(bb===usefulKey)return;usefulKey=bb;
+  hint.hidden=false;hint.textContent='⏳ Ищу полезное рядом…';
+  const q='[out:json][timeout:25];('+USEFUL.flatMap(u=>u.q.split(';').map(x=>x+'('+bb+');')).join('')+');out center 400;';
+  try{
+    if(usefulAbort)usefulAbort.abort();const ac=usefulAbort=new AbortController();
+    // сервер бывает перегружен — пробуем до 3 раз с паузой
+    let j=null;
+    for(let t=0;t<3&&!j;t++){
+      if(t){hint.textContent='⏳ Сервер занят, пробую ещё раз…';await new Promise(r=>setTimeout(r,2500));if(ac.signal.aborted)return;}
+      try{const r=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:new URLSearchParams({data:q}),signal:ac.signal});
+        if(r.ok)j=await r.json();}catch(e){if(e.name==='AbortError')return;}
+    }
+    if(!j)throw new Error('busy');
+    if(usefulKey!==bb)return;
+    usefulLayer.clearLayers();let n=0;
+    j.elements.forEach(e=>{const t=e.tags||{},u=usefulType(t);if(!u)return;const g=e.center||e;n++;
+      L.marker([g.lat,g.lon],{icon:L.divIcon({className:'',html:`<div class="uk" style="--c:${u.color}">${u.icon}</div>`,iconSize:[30,30],iconAnchor:[15,15]}),zIndexOffset:-500})
+        .bindTooltip(`${u.icon} ${t.name||t['name:en']||u.name}`,{className:'lbl',direction:'top',offset:[0,-14]}).addTo(usefulLayer);});
+    if(n){hint.hidden=true;}else{hint.textContent='Рядом ничего не нашлось';setTimeout(()=>hint.hidden=true,2500);}
+  }catch(e){if(e.name==='AbortError')return;usefulKey='';hint.hidden=false;hint.textContent='⚠️ Сервис не ответил — сдвиньте карту, чтобы попробовать снова';}
 }
 
 // маршрут между точками (OSRM на данных OpenStreetMap: пешком / на машине)
@@ -411,6 +499,7 @@ function viewDay(d){
        :`<button class="row" onclick="go('map/d${d.n}-${s.i}')">${ciHtml(s,s.k)}
           <span class="tx"><span class="tm">${s.time||''} · ${cat(s).name}${hoursWarn(s)?(hoursWarn(s).bad?' · ⛔ поздно':` · ⚠️ до ${s.close}`):''}</span>
           <div class="nm">${s.name}</div><div class="sm">${firstSentence(s.note)}</div></span><span class="go">›</span></button>`).join('')+
+     eatsBlock(d)+
      (hh?`<div class="hotel"><span class="ic">${hh.tbd?'❓':'🏨'}</span><div>
         <div class="hn">Ночь: ${hh.name}</div><div class="hm">${hh.nights}</div>${hh.ja?`<div class="ja" lang="ja">${hh.ja}</div>`:''}
         ${hh.tbd?`<div class="hm" style="margin-top:6px">${hh.note}</div>`:`<a href="${gmDir(null,hh)}" ${ext}>🧭 Дорога в отель</a><a href="${hotelLink(hh)}" ${ext}>Отель на карте</a>`}
@@ -436,6 +525,7 @@ function viewStop(d,s){
          ${s.addr?`<div><span class="k">📮</span><span>${s.addr}</span></div>`:''}
          <small>Часы и цены ориентировочные — сверьте перед визитом</small></div>`:''}
        ${s.tip?`<div class="tip">💡 ${s.tip}</div>`:''}
+       ${rulesHtml(s.rules)}
        <div class="card" style="margin-top:14px">
          <div class="h3">🧭 Как добраться</div>
          <div class="seg"><button data-f="prev">${from?(from.hotel?'От отеля':'От прошлого места'):'Начало дня'}</button><button data-f="me">📍 От меня</button></div>
@@ -454,6 +544,48 @@ function viewStop(d,s){
         moves.map(m=>`<div class="mvtxt">🚆 <b>${m.time?m.time+' · ':''}${m.name}</b><br>${m.note}${m.tip?'<br>💡 '+m.tip:''}</div>`).join('');
       $('gmBtn').href=gmDir(from,s);showLeg(s,from);}};
   segs.forEach(b=>b.onclick=()=>setMode(b.dataset.f));
+  setMode(store.get('routeFrom')||(today?'me':'prev'));
+}
+
+// ---------- рестораны ----------
+const rulesHtml=r=>r&&r.length?`<div class="rules"><b>🚫 Здесь важно</b><ul>${r.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:'';
+const eatLink=e=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(e.ja);
+function eatsBlock(d){
+  const es=EATS.filter(e=>e.day===d.n);if(!es.length)return '';
+  return `<div class="h3" style="margin:18px 2px 10px">🍜 Где поесть рядом</div>`+
+    es.map(e=>`<button class="row" onclick="go('map/eat-${e.id}')">${ciHtml(e)}
+      <span class="tx"><span class="tm">${e.dish} · ${e.price}</span><div class="nm">${e.name}</div>
+      <div class="sm">${EAT_TAGS[e.tag]}</div></span><span class="go">›</span></button>`).join('');
+}
+function viewEat(e){
+  const d=DAYS[e.day-1];chips(d);
+  // ближайшее к ресторану место плана этого дня — от него и строим маршрут
+  const near=d.places.reduce((a,s)=>!a||km(s,e)<km(a,e)?s:a,null);
+  $('body').innerHTML=
+    `<button class="back" onclick="go('map/d${d.n}')">‹ День ${dnum(d)} окт · все места</button>
+     <div class="stop">
+       <div class="photo-fb" style="background:${CATS.eat.color}">🍜</div>
+       <div class="stop-h">${ciHtml(e)}<div><div class="h2">${e.name}</div>
+         <div class="meta" style="margin-top:2px"><span lang="ja">${e.ja}</span></div></div></div>
+       <div style="margin-top:10px"><span class="etag">${EAT_TAGS[e.tag]}</span></div>
+       <p>${e.note}</p>
+       <div class="facts">
+         <div><span class="k">🍽</span><span><b>${e.dish}</b></span></div>
+         <div><span class="k">💴</span><span>${e.price} на человека</span></div>
+         <small>Часы работы и цены проверьте в Google Maps — они меняются</small></div>
+       <div class="card" style="margin-top:14px">
+         <div class="h3">🧭 Как добраться</div>
+         <div class="seg"><button data-f="prev">От «${near.name.length>18?near.name.slice(0,17)+'…':near.name}»</button><button data-f="me">📍 От меня</button></div>
+         <div id="legInfo"></div>
+         <div class="btns"><a class="btn primary" id="gmBtn" href="#" ${ext}>🚇 Маршрут в Google Maps</a>
+           <a class="btn" href="${eatLink(e)}" ${ext}>⭐ Отзывы и часы в Google Maps</a></div>
+       </div>
+     </div>`;
+  showDayOnMap(d,e);
+  const segs=[...$('body').querySelectorAll('.seg button')];
+  const setMode=mode=>{segs.forEach(b=>b.classList.toggle('on',b.dataset.f===mode));
+    if(mode==='me'){$('gmBtn').href=gmDir(null,e);routeFromMe(e);}else{$('gmBtn').href=gmDir(near,e);showLeg(e,near);}};
+  segs.forEach(b=>b.onclick=()=>{store.set('routeFrom',b.dataset.f);setMode(b.dataset.f);});
   setMode(store.get('routeFrom')||(today?'me':'prev'));
 }
 
@@ -480,8 +612,11 @@ function viewPlan(){
             ${s.hours||s.cost?`<div class="meta small">${s.hours?`<span>🕐 ${s.hours}</span>`:''}${s.cost?`<span>🎫 ${s.cost}</span>`:''}</div>`:''}
             ${w?`<div class="warn${w.bad?' bad':''}">${w.text}</div>`:''}
             ${s.tip?`<div class="tip">💡 ${s.tip}</div>`:''}
+            ${rulesHtml(s.rules)}
             ${s.move?'':`<div class="lk"><button class="btn primary" onclick="go('map/d${d.n}-${s.i}')">📍 На карте и маршрут</button></div>`}
           </div></div>`;}).join('')}
+        ${EATS.some(e=>e.day===d.n)?`<div class="it" style="display:block"><div class="small muted" style="font-weight:700;margin-bottom:8px">🍜 Где поесть рядом</div>
+          <div class="lk" style="margin-top:0">${EATS.filter(e=>e.day===d.n).map(e=>`<button class="btn" onclick="go('map/eat-${e.id}')">🍜 ${e.name}</button>`).join('')}</div></div>`:''}
         ${hh?`<div class="hotel"><span class="ic">${hh.tbd?'❓':'🏨'}</span><div><div class="hn">Ночь: ${hh.name}</div><div class="hm">${hh.nights}</div></div></div>`:''}
       </div></div>`;}).join('');
   let opened=[];try{opened=JSON.parse(store.get('openDays')||'[]');}catch(e){}
@@ -521,6 +656,12 @@ const LISTS={
     <div class="n"><b>Проверить:</b><ul>${p.check.map(c=>`<li>${c}</li>`).join('')}</ul></div>
     ${p.ideas?`<div class="n"><b>Идеи без японского:</b> ${p.ideas.join(' · ')}</div>`:''}</div></label>`).join('')+
     `</div><div class="card"><div class="h3">💡 Советы</div><ul class="list">${SHOPPING_TIPS.map(t=>`<li>${t}</li>`).join('')}</ul>`},
+  eats:{title:'🍜 Еда',lead:'Проверенные места у маршрута. Отмечайте, где уже поели. Нажмите на название — откроется карта и дорога.',html:()=>
+    DAYS.filter(d=>EATS.some(e=>e.day===d.n)).map((d,i)=>`<div class="h3" style="margin-top:${i?16:0}px">${dnum(d)} окт · ${d.city}</div>`+
+      EATS.filter(e=>e.day===d.n).map(e=>`<label class="ck" data-key="ate:${e.id}"><input type="checkbox"><div>
+        <button class="t" style="text-align:left" onclick="event.preventDefault();go('map/eat-${e.id}')">${e.name} <span style="color:var(--accent)">›</span></button>
+        <div class="w">${e.dish} · ${e.price}</div><div class="n">${EAT_TAGS[e.tag]}</div></div></label>`).join('')).join('')+
+    `</div><div class="card"><div class="h3">💡 Как найти, где едят японцы</div><ul class="list">${EAT_TIPS.map(t=>`<li>${t}</li>`).join('')}</ul>`},
   packing:{title:'🧳 Вещи',lead:'Что взять с собой.',html:()=>PACKING.map((g,gi)=>`<div class="h3" style="margin-top:${gi?14:0}px">${g.icon} ${g.title}</div>`+
     g.items.map((t,i)=>`<label class="ck" data-key="pack:${gi}-${i}"><input type="checkbox"><span>${t}</span></label>`).join('')).join('')},
 };
@@ -542,6 +683,9 @@ function viewInfo(){
       :`<div class="card"><div class="muted small" style="font-weight:700">${h.city} · ${h.nights}</div><div class="addr" lang="ja">${h.ja||h.addr}</div>
         <div class="muted small">${h.name}<br>${h.addr} · <a href="tel:${h.tel.replace(/\s/g,'')}">${h.tel}</a></div>
         <div class="btns"><a class="btn" href="${gmDir(null,h)}" ${ext}>🧭 Дорога в отель</a></div></div>`).join('')+
+    `<div class="h3" style="margin:18px 2px 10px">🚫 Что можно и нельзя</div>`+
+    RULES.map(c=>`<div class="card"><div class="h3">${c.icon} ${c.title}</div><ul class="list">${c.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('')+
+    `<p class="lead">Правила для конкретных мест — в карточке каждого места на карте (красный блок «Здесь важно»).</p>`+
     `<div class="h3" style="margin:18px 2px 10px">📖 Шпаргалка</div>`+
     CHEAT.map(c=>`<div class="card"><div class="h3">${c.icon} ${c.title}</div><ul class="list">${c.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('')+
     `<p class="lead" style="margin-top:14px">Страница работает без интернета после первого открытия. Добавьте её на главный экран телефона: «Поделиться» → «На экран Домой».</p>`;
@@ -563,11 +707,15 @@ function render(){
   $('ptitle').textContent=TITLES[tab];
   $('body').scrollTop=0;
   if(tab!=='map'){
-    if(map){map.removeLayer(dayLayer);legLayer.clearLayers();allLayer.addTo(map);}
+    if(map){legLayer.clearLayers();showAllOnMap(true);}
+    loadUseful();
     ({plan:viewPlan,lists:()=>viewLists(sub),info:viewInfo})[tab]();
     fillWx();return;
   }
+  const eat=(sub||'').startsWith('eat-')&&EATS.find(e=>e.id===sub.slice(4));
+  if(eat){if($('panel').dataset.state!=='peek')setSheet('peek');viewEat(eat);fillWx();loadUseful();return;}
   const m=(sub||'').match(/^d(\d+)(?:-(\d+))?$/),d=m&&DAYS[+m[1]-1];
+  loadUseful();
   if(!d)viewAll();
   else{const s=m[2]!==undefined?d.stops[+m[2]]:null;
     if($('panel').dataset.state==='mini'||(s&&$('panel').dataset.state==='full'))setSheet('peek');
@@ -592,6 +740,7 @@ const until=daysUntilTrip();
 $('psub').textContent=today?`Сегодня день ${today.n} из ${DAYS.length} · ${today.city}`:
   until>0?`7–17 октября · через ${until} ${plural(until,'день','дня','дней')}`:'Поездка завершена — おつかれさま!';
 bindThemeButton($('themeBtn'));
+drawFilters();
 if(!location.hash&&today)history.replaceState(null,'','#map/d'+today.n);
 render();
 loadWeather().then(w=>{WX=w;fillWx();});
