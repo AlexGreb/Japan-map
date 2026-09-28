@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Япония · расписание</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#f4efe6;--ink:#21201c;--vermilion:#c8462b;--vermilion-deep:#9e3120;
+    --sumi:#2c2a26;--gold:#b08a3e;--line:#d8cfbf;--muted:#6b665c}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Zen Kaku Gothic New',sans-serif;background:var(--paper);color:var(--ink)}
+  header{background:var(--sumi);color:var(--paper);padding:26px 24px 22px}
+  .wrap{max-width:1100px;margin:0 auto}
+  .kicker{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px}
+  h1{font-family:'Shippori Mincho',serif;font-weight:800;font-size:28px;line-height:1.2}
+  .sub{margin-top:8px;font-size:13px;color:var(--gold);font-weight:700}
+  .nav{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+  .nav a,.nav button{background:transparent;border:1px solid rgba(244,239,230,.35);color:var(--paper);
+    padding:7px 14px;border-radius:30px;font:700 12.5px 'Zen Kaku Gothic New',sans-serif;text-decoration:none;cursor:pointer}
+  .nav a:hover,.nav button:hover{background:rgba(244,239,230,.1)}
+  main{padding:20px 16px 50px}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13.5px}
+  th{background:#ebe4d6;text-align:left;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:10px 12px;color:#5a554b}
+  td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:top;line-height:1.45}
+  tr.dayrow td{background:#f8f4ec;border-top:2px solid var(--line);padding:12px}
+  .dn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+    color:#fff;font:800 12px 'Shippori Mincho',serif;margin-right:10px;vertical-align:middle}
+  .dtitle{font-family:'Shippori Mincho',serif;font-weight:700;font-size:15.5px;vertical-align:middle}
+  .ddate{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--vermilion-deep);margin-left:10px;vertical-align:middle}
+  .time{white-space:nowrap;font-weight:700;color:var(--muted)}
+  .name{font-weight:700}
+  .note{color:var(--muted);font-size:12.5px}
+  .tip{margin-top:4px;font-size:12px;color:#3f6b34}
+  .city{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;white-space:nowrap}
+  tr.hotel td{background:#2c2a26;color:#f4efe6}
+  tr.hotel .note{color:rgba(244,239,230,.75)}
+  a.map{color:var(--vermilion-deep);font-weight:700;text-decoration:none;white-space:nowrap;font-size:12.5px}
+  tr.hotel a.map{color:var(--gold)}
+  .empty{color:#b3ab9c}
+  @media (max-width:760px){
+    table,thead,tbody,tr,td{display:block;width:100%}
+    thead{display:none}
+    table{border-radius:8px}
+    td{border-top:none;padding:4px 12px}
+    tr{border-top:1px solid var(--line);padding:8px 0}
+    tr.dayrow{padding:0}
+    td.time:empty,td.lnk:empty{display:none}
+  }
+  @media print{
+    header{background:none;color:var(--ink);padding:0 0 10px}
+    .nav{display:none}
+    body{background:#fff}
+    tr{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="kicker">Расписание · 11 дней</div>
+    <h1>Япония: когда и что посещаем</h1>
+    <div class="sub">7 – 17 октября</div>
+    <div class="nav">
+      <a href="index.html">🗺 Карта маршрута</a>
+      <button onclick="window.print()">🖨 Печать / PDF</button>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+  <table>
+    <thead><tr><th>Время</th><th>Место</th><th>Город</th><th></th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+</main>
+<script src="data.js"></script>
+<script>
+const link=s=>s.url||('https://www.google.com/maps/search/?api=1&query='+s.lat+','+s.lng);
+const hlink=h=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(h.name.replace('♨️','').trim())+'&query_place_id='+h.pid;
+const rows=[];
+DAYS.forEach(d=>{
+  const col=COLORS[d.ck];
+  rows.push(`<tr class="dayrow"><td colspan="4">
+    <span class="dn" style="background:${col}">${d.n}</span><span class="dtitle">${d.title}</span><span class="ddate">${d.date}</span></td></tr>`);
+  d.stops.forEach(s=>rows.push(`<tr>
+    <td class="time">${s.time||''}</td>
+    <td><div class="name">${s.name}</div><div class="note">${s.note}</div>${s.tip?`<div class="tip">💡 ${s.tip}</div>`:''}</td>
+    <td class="city" style="color:${col}">${d.city}</td>
+    <td class="lnk"><a class="map" href="${link(s)}" target="_blank" rel="noopener">На карте →</a></td></tr>`));
+  const h=d.hotel&&HOTELS[d.hotel];
+  if(h)rows.push(`<tr class="hotel">
+    <td class="time">🏨 ночь</td>
+    <td><div class="name">${h.name}</div><div class="note">${h.nights}${h.addr?' · '+h.addr:''}</div></td>
+    <td class="city">${h.city}</td>
+    <td class="lnk">${h.tbd?'':`<a class="map" href="${hlink(h)}" target="_blank" rel="noopener">Отель →</a>`}</td></tr>`);
+});
+document.getElementById('rows').innerHTML=rows.join('');
+</script>
+</body>
+</html>
