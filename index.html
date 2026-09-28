@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Япония · 11 дней · 7–17 октября</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Япония · 7–17 октября</title>
 <script>try{const t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#2c2a26">
@@ -12,373 +12,494 @@
 <link rel="stylesheet" href="common.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
-  body{font-family:'Zen Kaku Gothic New',sans-serif;overflow:hidden}
-  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.035;
-    background-image:radial-gradient(var(--ink) .5px,transparent .5px);background-size:4px 4px}
-  .app{display:flex;height:100vh;height:100dvh;width:100vw}
-  .panel{width:404px;flex:none;height:100%;overflow-y:auto;background:var(--paper);
-    border-right:1px solid var(--line);box-shadow:4px 0 24px rgba(0,0,0,.06);z-index:500}
-  .panel::-webkit-scrollbar{width:8px}
-  .panel::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
-  .masthead{padding:26px 26px 22px;background:var(--mast);color:var(--mast-fg);position:relative;overflow:hidden}
-  .masthead::after{content:"旅";position:absolute;right:-10px;top:-30px;font-family:'Shippori Mincho',serif;
-    font-size:160px;font-weight:800;color:rgba(244,239,230,.06);line-height:1}
-  .kicker{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:10px}
-  .masthead h1{font-family:'Shippori Mincho',serif;font-weight:800;font-size:30px;line-height:1.15;letter-spacing:.01em}
-  .masthead .dates{margin-top:10px;font-size:13px;color:var(--gold);font-weight:700;letter-spacing:.04em}
-  .masthead .route{margin-top:8px;font-size:12.5px;color:rgba(244,239,230,.7);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-  .masthead .route b{color:var(--mast-fg);font-weight:700}
-  .masthead .route span{color:var(--vermilion);font-weight:700}
-  .countdown{margin-top:10px;font-size:12px;color:rgba(244,239,230,.75)}
-  .legend{display:flex;gap:6px;flex-wrap:wrap;padding:12px 22px;border-bottom:1px solid var(--line);font-size:12px;font-weight:500}
-  .legend button{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);color:var(--ink);
-    border-radius:20px;padding:5px 10px;font:500 12px 'Zen Kaku Gothic New',sans-serif;cursor:pointer}
-  .legend button.off{opacity:.4;text-decoration:line-through}
-  .legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
-  .legend i.sq{border-radius:3px;background:var(--sumi);border:1px solid var(--muted)}
-  .legend .hint{width:100%;font-size:11px;color:var(--muted);margin-top:2px}
-  .days{padding:8px 0 40px}
-  .day{border-bottom:1px solid var(--line);padding:16px 22px;cursor:pointer;transition:background .2s;scroll-margin-top:8px}
-  .day:hover{background:rgba(200,70,43,.05)}
-  .day.active{background:rgba(200,70,43,.08);box-shadow:inset 4px 0 0 var(--vermilion)}
-  .day-head{display:flex;align-items:baseline;gap:12px}
-  .day-num{font-family:'Shippori Mincho',serif;font-weight:800;font-size:13px;color:#fff;background:var(--sumi);
-    width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:2px}
-  .day-date{font-size:11px;letter-spacing:.1em;font-weight:700;color:var(--vermilion-deep);text-transform:uppercase}
-  .today-badge{display:inline-block;margin-left:6px;background:var(--gold);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;letter-spacing:.06em}
-  .day-title{font-family:'Shippori Mincho',serif;font-weight:700;font-size:16px;line-height:1.3;margin-top:2px}
-  .day-city{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-top:3px}
-  .holiday{margin:10px 0 0 42px;font-size:12px;line-height:1.45;background:var(--today);border-radius:8px;padding:8px 10px}
-  .stops{margin:12px 0 0 42px;display:flex;flex-direction:column;gap:12px}
-  .stop{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--c-kyoto);
-    border-radius:9px;overflow:hidden;box-shadow:0 2px 7px rgba(0,0,0,.06)}
-  .thumb{width:100%;height:140px;object-fit:cover;display:block;background:var(--ph)}
-  .thumb-fb{width:100%;height:120px;display:flex;align-items:center;justify-content:center;
-    font-size:42px;color:rgba(255,255,255,.95)}
-  .stop .b{padding:10px 13px 13px}
-  .time{display:inline-block;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.04em;margin-bottom:2px}
-  .stop .s-name{font-weight:700;font-size:14px;line-height:1.25}
-  .stop .s-note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:4px}
-  .tip{margin-top:6px;font-size:11.5px;color:var(--tip-fg);background:var(--tip-bg);border-radius:6px;padding:5px 8px;line-height:1.4}
-  .tip b{color:var(--tip-b)}
-  .links{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
-  .links a{color:var(--vermilion-deep);font-size:11.5px;font-weight:700;text-decoration:none;border-bottom:1px solid transparent}
-  .links a:hover{border-bottom-color:var(--vermilion-deep)}
-  .move{display:flex;gap:10px;align-items:flex-start;font-size:12px;line-height:1.45;color:var(--muted);
-    border:1px dashed var(--line);border-radius:9px;padding:8px 11px}
-  .move .ic{font-size:16px;line-height:1.2}
-  .move b{color:var(--ink)}
-  .hotel{margin:10px 0 0 42px;display:flex;gap:10px;align-items:flex-start;background:#2c2a26;color:#f4efe6;
-    border-radius:9px;padding:11px 13px}
-  .hotel .ic{font-size:20px;line-height:1;flex:none;margin-top:1px}
-  .hotel .hn{font-weight:700;font-size:13px;line-height:1.3}
-  .hotel .hm{font-size:11px;color:rgba(244,239,230,.62);margin-top:2px}
-  .hotel .hja{font-size:12px;color:#f4efe6;margin-top:5px}
-  .hotel .hnote{font-size:11px;color:rgba(244,239,230,.82);margin-top:5px;line-height:1.4}
-  .hotel a{display:inline-block;margin-top:6px;margin-right:12px;color:var(--gold);font-size:11px;font-weight:700;text-decoration:none}
-  .foot{padding:18px 26px;font-size:11.5px;color:var(--muted);line-height:1.5}
+  body{font-family:'Zen Kaku Gothic New',sans-serif;overflow:hidden;display:flex}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+  a{color:inherit}
+
+  /* ---------- панель ---------- */
+  .sheet{width:420px;flex:none;height:100%;display:flex;flex-direction:column;background:var(--paper);
+    border-right:1px solid var(--line);box-shadow:4px 0 24px rgba(0,0,0,.08);z-index:500}
+  .grab{display:none}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px 10px;background:var(--mast);color:var(--mast-fg)}
+  .brand b{font-family:'Shippori Mincho',serif;font-size:20px;font-weight:800}
+  .brand span{color:var(--gold);font-weight:700;font-size:13px;margin-left:6px}
+  .brand small{display:block;font-size:11.5px;color:rgba(244,239,230,.7);margin-top:2px}
+  .actions{display:flex;gap:4px}
+  .actions a,.actions button{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    font-size:17px;text-decoration:none;background:rgba(244,239,230,.08)}
+  .actions a:hover,.actions button:hover{background:rgba(244,239,230,.18)}
+
+  .chips{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;border-bottom:1px solid var(--line);scrollbar-width:none;flex:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:none;display:flex;flex-direction:column;align-items:center;min-width:48px;padding:5px 8px;border-radius:12px;
+    border:1.5px solid var(--line);background:var(--card);line-height:1.15;position:relative}
+  .chip b{font-size:15px}
+  .chip small{font-size:10px;color:var(--muted);white-space:nowrap}
+  .chip.on{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+  .chip.on small{color:var(--paper);opacity:.8}
+  .chip.today::after{content:"";position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:var(--gold)}
+  .chip.all{justify-content:center;font-weight:700;font-size:12.5px}
+
+  .content{flex:1;overflow-y:auto;padding:14px 16px 40px;-webkit-overflow-scrolling:touch}
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--vermilion-deep);padding:4px 0;margin-bottom:8px}
+
+  /* обзор */
+  .intro{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px}
+  .dcard{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:11px 12px;border:1px solid var(--line);
+    background:var(--card);border-radius:12px;margin-bottom:8px}
+  .dcard:hover{border-color:var(--muted)}
+  .dcard .n{flex:none;width:34px;height:34px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;
+    font:800 14px 'Shippori Mincho',serif}
+  .dcard .d{font-size:11px;font-weight:700;color:var(--vermilion-deep);letter-spacing:.05em;text-transform:uppercase}
+  .dcard .t{font-weight:700;font-size:14px;line-height:1.3}
+  .dcard .go{margin-left:auto;color:var(--muted);font-size:18px}
+  .dcard.today{box-shadow:0 0 0 2px var(--gold)}
+
+  /* день */
+  .dhead{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+  .dhead .n{flex:none;width:40px;height:40px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;
+    font:800 17px 'Shippori Mincho',serif}
+  .dhead .d{font-size:11.5px;font-weight:700;color:var(--vermilion-deep);letter-spacing:.05em;text-transform:uppercase}
+  .dhead h2{font-family:'Shippori Mincho',serif;font-size:19px;line-height:1.25}
+  .note-box{font-size:12.5px;line-height:1.45;background:var(--today);border-radius:10px;padding:9px 11px;margin-bottom:12px}
+  .hint{font-size:12px;color:var(--muted);margin:2px 0 10px}
+  .tl{position:relative;margin-left:4px}
+  .row{display:flex;gap:11px;align-items:flex-start;width:100%;text-align:left;padding:9px 10px;border-radius:12px;background:var(--card);
+    border:1px solid var(--line);margin-bottom:6px}
+  .row:hover{border-color:var(--muted)}
+  .row .num{flex:none;width:28px;height:28px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
+  .row .tx{flex:1;min-width:0}
+  .row .tm{font-size:11px;font-weight:700;color:var(--muted)}
+  .row .nm{font-weight:700;font-size:14px;line-height:1.3}
+  .row .sm{font-size:12px;color:var(--muted);line-height:1.35;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .row .go{color:var(--muted);font-size:18px;align-self:center}
+  .mv{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--muted);padding:4px 10px 10px 16px;margin-left:13px;border-left:2px dashed var(--line)}
+  .mv b{color:var(--ink);font-weight:700}
+  .hotel{display:flex;gap:10px;align-items:flex-start;background:#2c2a26;color:#f4efe6;border-radius:12px;padding:11px 12px;margin-top:10px}
+  .hotel .hn{font-weight:700;font-size:13.5px}
+  .hotel .hm{font-size:11.5px;color:rgba(244,239,230,.7);margin-top:2px}
+  .hotel .ja{font-size:13px;margin-top:5px}
+  .hotel a{display:inline-block;margin-top:7px;margin-right:12px;color:var(--gold);font-size:12px;font-weight:700;text-decoration:none}
+  .daynav{display:flex;justify-content:space-between;gap:8px;margin-top:16px}
+  .daynav button{flex:1;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-weight:700;font-size:13px}
+  .daynav button:disabled{opacity:.35;cursor:default}
+
+  /* точка */
+  .photo{width:100%;height:170px;object-fit:cover;border-radius:12px;display:block;background:var(--ph)}
+  .photo-fb{width:100%;height:110px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:46px}
+  .meta{font-size:12px;font-weight:700;color:var(--muted);margin-top:12px}
+  .stop h2{font-family:'Shippori Mincho',serif;font-size:21px;line-height:1.25;margin:2px 0 6px}
+  .stop p{font-size:13.5px;line-height:1.5}
+  .addr{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .tip{margin-top:10px;font-size:12.5px;color:var(--tip-fg);background:var(--tip-bg);border-radius:10px;padding:9px 11px;line-height:1.45}
+  .facts{margin-top:10px;font-size:12.5px;line-height:1.6;border:1px solid var(--line);border-radius:10px;padding:8px 11px;background:var(--card)}
+  .facts small{display:block;color:var(--muted);font-size:11px}
+  .howto{margin-top:14px;border:1.5px solid var(--ink);border-radius:12px;padding:12px}
+  .howto h3{font-size:14px;margin-bottom:6px}
+  .howto .from{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+  .howto .mvtxt{font-size:12.5px;line-height:1.45;margin-bottom:8px;padding-left:10px;border-left:3px solid var(--line)}
+  .seg{display:flex;background:var(--head-bg);border-radius:10px;padding:3px;margin-bottom:10px}
+  .seg button{flex:1;padding:7px 6px;border-radius:8px;font-size:12.5px;font-weight:700;color:var(--muted)}
+  .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+  .leg{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;margin-bottom:10px}
+  .leg .ic{font-size:22px}
+  .leg small{display:block;font-weight:500;font-size:12px;color:var(--muted)}
+  .btns{display:flex;flex-wrap:wrap;gap:8px}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;
+    border:1px solid var(--line);background:var(--card)}
+  .btn.primary{background:var(--vermilion);border-color:var(--vermilion);color:#fff}
+  .stopnav{display:flex;gap:8px;margin-top:16px}
+  .stopnav button{flex:1;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-weight:700;font-size:13px;text-align:center}
+  .stopnav button:disabled{opacity:.35;cursor:default}
+
+  /* ---------- карта ---------- */
   #map{flex:1;height:100%;background:#cdd9d3;z-index:1}
   .leaflet-container{font-family:'Zen Kaku Gothic New',sans-serif}
   .pin{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50% 50% 50% 0;
     transform:rotate(-45deg);border:2.5px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.35);
-    font-weight:800;font-size:12px;color:#fff;font-family:'Shippori Mincho',serif}
+    font-weight:800;font-size:13px;color:#fff;transition:transform .15s}
   .pin span{transform:rotate(45deg)}
-  .pin.shop{font-size:14px;border-style:dashed}
-  .hpin{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;
-    border:2.5px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.4);background:#2c2a26;font-size:15px}
+  .pin.shop{border-style:dashed}
+  .pin.sel{transform:rotate(-45deg) scale(1.35);box-shadow:0 0 0 4px rgba(0,0,0,.25),0 4px 12px rgba(0,0,0,.4)}
+  .hpin{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;
+    border:2.5px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.4);background:#2c2a26;font-size:14px}
   .me{width:16px;height:16px;border-radius:50%;background:#2a7fff;border:3px solid #fff;box-shadow:0 0 0 2px rgba(42,127,255,.35),0 2px 6px rgba(0,0,0,.4)}
-  .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--ink)}
-  .leaflet-popup-content-wrapper{border-radius:6px;box-shadow:0 6px 24px rgba(0,0,0,.2);overflow:hidden;padding:0}
-  .leaflet-popup-content{margin:0;font-size:13px;line-height:1.5;width:235px!important}
-  .pop-img{width:100%;height:130px;object-fit:cover;display:block}
-  .pop-fb{width:100%;height:110px;display:flex;align-items:center;justify-content:center;font-size:42px;color:#fff}
-  .pop-b{padding:11px 14px 13px}
-  .pop-day{font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--vermilion)}
-  .pop-name{font-family:'Shippori Mincho',serif;font-weight:700;font-size:16px;margin:3px 0 5px}
-  .pop-note{color:var(--muted);margin-bottom:6px;font-size:12.5px}
-  .pop-tip{font-size:12px;color:var(--tip-fg);background:var(--tip-bg);border-radius:6px;padding:6px 9px;margin-bottom:8px;line-height:1.4}
-  .pop-links{display:flex;gap:12px;flex-wrap:wrap}
-  .pop-link{color:var(--vermilion-deep)!important;font-weight:700;text-decoration:none;font-size:12px}
-  .map-btn{background:var(--card);color:var(--ink);border:none;width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-  .map-btn:hover{background:var(--paper)}
-  .toggle{display:none;position:fixed;z-index:1000;bottom:20px;left:50%;transform:translateX(-50%);
-    background:var(--sumi);color:#f4efe6;border:none;padding:13px 22px;border-radius:40px;
-    font-weight:700;font-size:14px;font-family:'Zen Kaku Gothic New',sans-serif;
-    box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;letter-spacing:.03em}
+  .map-btn{background:var(--card);color:var(--ink);width:36px;height:36px;font-size:18px;display:flex;align-items:center;justify-content:center}
+  .leaflet-tooltip.lbl{background:var(--card);color:var(--ink);border:none;box-shadow:0 2px 8px rgba(0,0,0,.25);font-weight:700;font-size:12px;padding:3px 8px}
+  .leaflet-tooltip.lbl::before{display:none}
+  .z-low .leaflet-tooltip.perm{display:none}
+
+  /* ---------- телефон: карта на весь экран, план — выезжающая снизу шторка ---------- */
   @media (max-width:760px){
-    .app{flex-direction:column}
-    .panel{width:100%;height:100%;position:absolute;inset:0;transition:transform .35s cubic-bezier(.4,0,.2,1)}
-    .panel.hidden{transform:translateY(100%)}
-    #map{height:100%;width:100%}
-    .toggle{display:block}
-    .days{padding-bottom:90px}
+    body{display:block}
+    #map{position:fixed;inset:0;height:auto}
+    .sheet{position:fixed;left:0;right:0;bottom:0;width:100%;border-right:none;border-radius:18px 18px 0 0;
+      box-shadow:0 -6px 30px rgba(0,0,0,.25);transition:height .3s cubic-bezier(.4,0,.2,1);overflow:hidden;
+      padding-bottom:env(safe-area-inset-bottom)}
+    .sheet[data-state="mini"]{height:168px}
+    .sheet[data-state="peek"]{height:52%}
+    .sheet[data-state="full"]{height:calc(100% - 56px)}
+    .grab{display:flex;justify-content:center;align-items:center;height:22px;flex:none;background:var(--mast);cursor:grab;touch-action:none}
+    .grab span{width:44px;height:5px;border-radius:3px;background:rgba(244,239,230,.45)}
+    .top{padding-top:4px}
   }
 </style>
 </head>
 <body>
-<div class="app">
-  <aside class="panel" id="panel">
-    <div class="masthead">
-      <div class="kicker">Маршрут · 11 дней</div>
-      <h1>Япония<br>от Кансая до Токио</h1>
-      <div class="dates">7 – 17 октября</div>
-      <div class="route">
-        <b>Осака</b><span>→</span><b>Киото</b><span>→</span><b>Нара</b>♨️<span>→</span><b>Токио</b>
-      </div>
-      <div class="countdown" id="countdown"></div>
-      <div class="pills">
-        <button class="pill" id="todayBtn">📍 Сегодня</button>
-        <a class="pill" href="schedule.html">📅 Расписание</a>
-        <a class="pill" href="schedule.html#bookings">🎫 Брони</a>
-        <a class="pill" href="schedule.html#shopping">🛒 Покупки</a>
-        <a class="pill" href="schedule.html#cheat">📖 Шпаргалка</a>
-        <button class="pill" id="themeBtn" aria-label="Тема"></button>
-      </div>
+<aside class="sheet" id="sheet" data-state="peek">
+  <div class="grab" id="grab" title="Развернуть / свернуть"><span></span></div>
+  <header class="top">
+    <div class="brand"><b>Япония</b><span>7–17 окт</span><small id="countdown"></small></div>
+    <div class="actions">
+      <a href="schedule.html" title="Расписание таблицей">📅</a>
+      <a href="schedule.html#shopping" title="Список покупок">🛒</a>
+      <a href="schedule.html#bookings" title="Брони и билеты">🎫</a>
+      <a href="schedule.html#cheat" title="Шпаргалка">📖</a>
+      <button id="themeBtn" aria-label="Тема"></button>
     </div>
-    <div class="legend" id="legend"></div>
-    <div class="days" id="days"></div>
-    <div class="foot">
-      Нажмите на день, точку или отель, чтобы приблизить карту. «Маршрут сюда» строит путь в Google Maps от того места, где вы сейчас.<br><br>
-      Время — ориентировочное. Дни недели — для октября 2026 г. Зелёные плашки — лайфхаки.
-      Фото и основа карты хранятся локально; открыв страницу один раз с интернетом, её можно смотреть и без сети.
-    </div>
-  </aside>
-  <div id="map"></div>
-</div>
-<button class="toggle" id="toggle">🗺 Показать карту</button>
+  </header>
+  <nav class="chips" id="chips"></nav>
+  <div class="content" id="content"></div>
+</aside>
+<div id="map"></div>
 
 <script src="data.js"></script>
 <script src="common.js"></script>
 <script>
-// если фото не загрузилось — показываем цветную плашку с эмодзи
-function imgFail(el,cls){const d=document.createElement('div');d.className=cls;
-  d.style.background=el.dataset.c;d.textContent=el.dataset.e;el.replaceWith(d);}
-function imgTag(s,cls,fbCls){
-  const c=s.fbc||COLORS.kyoto,e=s.fb||'📍';
-  return s.img?`<img class="${cls}" src="${s.img}" alt="" loading="lazy" data-c="${c}" data-e="${e}" onerror="imgFail(this,'${fbCls}')">`
-              :`<div class="${fbCls}" style="background:${c}">${e}</div>`;}
-const places=d=>d.stops.filter(s=>!s.move);
+const $=id=>document.getElementById(id);
 const ext='target="_blank" rel="noopener"';
+const mobile=()=>innerWidth<=760;
+const today=todayDay();
 
-// Leaflet: локальная копия, затем CDN по очереди
+// ---------- вспомогательное ----------
+function imgFail(el){const d=document.createElement('div');d.className='photo-fb';
+  d.style.background=el.dataset.c;d.textContent=el.dataset.e;el.replaceWith(d);}
+function photo(s){const c=s.fbc||COLORS.kyoto,e=s.fb||'📍';
+  return s.img?`<img class="photo" src="${s.img}" alt="" data-c="${c}" data-e="${e}" onerror="imgFail(this)">`
+              :`<div class="photo-fb" style="background:${c}">${e}</div>`;}
+function firstSentence(t){const m=t.match(/^.*?[.!?](\s|$)/);return m?m[0]:t;}
+function km(a,b){const R=6371,r=Math.PI/180,dLa=(b.lat-a.lat)*r,dLo=(b.lng-a.lng)*r;
+  const x=Math.sin(dLa/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(x));}
+function fmtMin(sec){const m=Math.round(sec/60);return m<60?m+' мин':Math.floor(m/60)+' ч '+(m%60?m%60+' мин':'');}
+function fmtKm(m){return m<1000?Math.round(m/10)*10+' м':(m/1000).toFixed(1).replace('.',',')+' км';}
+function gmDir(from,to){return 'https://www.google.com/maps/dir/?api=1'+(from?'&origin='+from.lat+','+from.lng:'')+
+  '&destination='+to.lat+','+to.lng+'&travelmode=transit';}
+
+// места дня (без переездов) с порядковым номером
+DAYS.forEach(d=>{let k=0;d.stops.forEach((s,i)=>{s.i=i;if(!s.move)s.k=++k;});d.places=d.stops.filter(s=>!s.move);});
+const hotelOf=d=>d&&d.hotel&&!HOTELS[d.hotel].tbd?HOTELS[d.hotel]:null;
+
+// откуда идём к точке: предыдущее место дня, а для первой точки — отель прошлой ночи
+function prevOf(d,s){
+  for(let j=s.i-1;j>=0;j--)if(!d.stops[j].move)return {p:d.stops[j],moves:d.stops.slice(j+1,s.i).filter(x=>x.move)};
+  const h=hotelOf(DAYS[d.n-2]);
+  return {p:h?Object.assign({hotel:true},h):null,moves:d.stops.slice(0,s.i).filter(x=>x.move)};
+}
+
+// ---------- карта ----------
+let map=null,allLayer,dayLayer,legLayer,markerOf=new Map();
 function loadLeaflet(srcs,done){
   if(window.L)return done();
-  if(!srcs.length){document.getElementById('map').innerHTML=
-    '<div style="padding:40px;text-align:center;color:var(--muted)">Не удалось загрузить карту — обновите страницу.</div>';return;}
-  const s=document.createElement('script');s.src=srcs[0];
-  s.onload=done;s.onerror=()=>loadLeaflet(srcs.slice(1),done);
+  if(!srcs.length){$('map').innerHTML='<div style="padding:40px;text-align:center;color:var(--muted)">Не удалось загрузить карту — обновите страницу.</div>';return;}
+  const s=document.createElement('script');s.src=srcs[0];s.onload=done;s.onerror=()=>loadLeaflet(srcs.slice(1),done);
   document.head.appendChild(s);
 }
-
-let map=null;const markers={};const cityLayers={};let hotelLayer=null,shopLayer=null;let pendingDay=null;
-
 function initMap(){
-map=L.map('map',{scrollWheelZoom:true,zoomControl:true}).setView([35.2,137.0],6);
-map.attributionControl.setPrefix('<a href="https://leafletjs.com" '+ext+'>Leaflet</a>'); // без флага
+  map=L.map('map',{zoomControl:!mobile()}).setView([35.2,137],6);
+  map.attributionControl.setPrefix('<a href="https://leafletjs.com" '+ext+'>Leaflet</a>');
+  // локальная основа карты (tiles/, масштабы 4–9) — видна даже без интернета
+  L.tileLayer('tiles/{z}/{x}/{y}.png',{maxZoom:19,minNativeZoom:4,maxNativeZoom:9,bounds:[[30,128],[44,146]],attribution:'&copy; OpenStreetMap'}).addTo(map);
+  // подробная карта из интернета; если один сервер не отвечает — переключаемся на другой (CARTO требует ключ — не используем)
+  const TILES=[['https://tile.openstreetmap.org/{z}/{x}/{y}.png','&copy; OpenStreetMap'],
+    ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}','&copy; Esri']];
+  let ti=0,err=0,ok=0,tl;
+  (function set(i){if(tl)map.removeLayer(tl);err=ok=0;
+    tl=L.tileLayer(TILES[i][0],{maxZoom:19,attribution:TILES[i][1]}).addTo(map);
+    tl.on('tileload',()=>ok++);tl.on('tileerror',()=>{if(++err>=4&&!ok&&ti<TILES.length-1)set(++ti);});})(0);
+  const dark=()=>$('map').classList.toggle('dark-map',isDark());dark();document.addEventListener('themechange',dark);
+  // подписи мест — только при приближении, иначе они налезают друг на друга
+  const zl=()=>$('map').classList.toggle('z-low',map.getZoom()<12);map.on('zoomend',zl);zl();
 
-// локальная подложка (папка tiles/, масштабы 4–9) лежит снизу и видна, если интернет-тайлы не грузятся
-L.tileLayer('tiles/{z}/{x}/{y}.png',{minZoom:0,maxZoom:19,minNativeZoom:4,maxNativeZoom:9,
-  bounds:[[30,128],[44,146]],attribution:'&copy; OpenStreetMap'}).addTo(map);
+  allLayer=L.layerGroup();dayLayer=L.layerGroup();legLayer=L.layerGroup().addTo(map);
 
-// подложки из интернета: если одна не грузится — переключаемся на следующую (CARTO не используем — требует API-ключ)
-const TILES=[
-  ['https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap'}],
-  ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{attribution:'&copy; Esri'}]
-];
-let tIdx=0,tErr=0,tOk=0,layer;
-function setTiles(i){
-  if(layer)map.removeLayer(layer);
-  tErr=0;tOk=0;
-  layer=L.tileLayer(TILES[i][0],Object.assign({maxZoom:19},TILES[i][1])).addTo(map);
-  layer.on('tileload',()=>tOk++);
-  layer.on('tileerror',()=>{if(++tErr>=4&&tOk===0&&tIdx<TILES.length-1)setTiles(++tIdx);});
+  // обзор: все точки с номером дня
+  DAYS.forEach(d=>d.places.forEach(s=>{
+    L.marker([s.lat,s.lng],{icon:pinIcon(d.n,COLORS[d.ck],s.shop)}).addTo(allLayer)
+      .bindTooltip(`День ${d.n}: ${s.name}`,{className:'lbl',direction:'top',offset:[0,-26]})
+      .on('click',()=>go(`d${d.n}-${s.i}`));
+  }));
+  Object.values(HOTELS).forEach(h=>{if(!h.tbd)L.marker([h.lat,h.lng],{icon:hotelIcon()}).addTo(allLayer)
+    .bindTooltip('🏨 '+h.name,{className:'lbl',direction:'top',offset:[0,-14]});});
+
+  // кнопка «где я»
+  let me=null,acc=null;
+  const Locate=L.Control.extend({options:{position:'topright'},onAdd(){
+    const b=L.DomUtil.create('button','map-btn leaflet-bar');b.title='Где я';b.textContent='🎯';
+    L.DomEvent.disableClickPropagation(b);b.onclick=()=>{b.textContent='⏳';map.locate({setView:true,maxZoom:15,enableHighAccuracy:true});};
+    map.on('locationfound',e=>{b.textContent='🎯';
+      if(!me){me=L.marker(e.latlng,{icon:L.divIcon({className:'',html:'<div class="me"></div>',iconSize:[16,16],iconAnchor:[8,8]}),zIndexOffset:1000}).addTo(map);
+        acc=L.circle(e.latlng,{radius:e.accuracy,color:'#2a7fff',weight:1,fillOpacity:.1}).addTo(map);}
+      else{me.setLatLng(e.latlng);acc.setLatLng(e.latlng).setRadius(e.accuracy);}});
+    map.on('locationerror',()=>{b.textContent='🚫';setTimeout(()=>b.textContent='🎯',2500);});
+    return b;}});
+  new Locate().addTo(map);
+  render();
 }
-setTiles(0);
+function pinIcon(label,col,shop,sel){return L.divIcon({className:'',
+  html:`<div class="pin${shop?' shop':''}${sel?' sel':''}" style="background:${col}"><span>${label}</span></div>`,
+  iconSize:[30,30],iconAnchor:[15,30]});}
+function hotelIcon(){return L.divIcon({className:'',html:'<div class="hpin">🏨</div>',iconSize:[28,28],iconAnchor:[14,14]});}
 
-// тёмная тема для карты
-const applyMapTheme=()=>document.getElementById('map').classList.toggle('dark-map',isDark());
-applyMapTheme();document.addEventListener('themechange',applyMapTheme);
-if(window.matchMedia)matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',applyMapTheme);
+// вписать точки в видимую часть карты (на телефоне — над шторкой)
+function fit(pts,maxZoom){
+  if(!map||!pts.length)return;
+  const opt={paddingTopLeft:[40,50],paddingBottomRight:[40,sheetH()+30],maxZoom:pts.length===1?15:(maxZoom||16)};
+  map.fitBounds(L.latLngBounds(pts),opt);
+}
 
-const allPts=[];const routePts=[];
-Object.keys(COLORS).forEach(k=>cityLayers[k]=L.layerGroup().addTo(map));
-hotelLayer=L.layerGroup().addTo(map);
-shopLayer=L.layerGroup().addTo(map);
-
-// точки достопримечательностей
-DAYS.forEach(d=>{
+function showAllOnMap(){
+  if(!map)return;
+  dayLayer.clearLayers();legLayer.clearLayers();map.removeLayer(dayLayer);allLayer.addTo(map);
+  fit(DAYS.flatMap(d=>d.places.map(s=>[s.lat,s.lng])),9);
+}
+function showDayOnMap(d,sel){
+  if(!map)return;
+  map.removeLayer(allLayer);dayLayer.clearLayers();legLayer.clearLayers();dayLayer.addTo(map);
   const col=COLORS[d.ck];
-  places(d).forEach(s=>{
-    routePts.push([s.lat,s.lng]);allPts.push([s.lat,s.lng]);
-    const icon=L.divIcon({className:'',
-      html:s.shop?`<div class="pin shop" style="background:${col}"><span>🛍</span></div>`
-                 :`<div class="pin" style="background:${col}"><span>${d.n}</span></div>`,
-      iconSize:[30,30],iconAnchor:[15,28],popupAnchor:[0,-28]});
-    const m=L.marker([s.lat,s.lng],{icon}).addTo(s.shop?shopLayer:cityLayers[d.ck]);
-    m.bindPopup(
-      imgTag(s,'pop-img','pop-fb')+
-      `<div class="pop-b">`+
-      `<div class="pop-day" style="color:${col}">День ${d.n} · ${d.date}${s.time?' · '+s.time:''}</div>`+
-      `<div class="pop-name">${s.name}</div>`+
-      `<div class="pop-note">${s.note}${s.addr?`<br>📮 ${s.addr}`:''}</div>`+
-      (s.tip?`<div class="pop-tip">💡 ${s.tip}</div>`:'')+
-      `<div class="pop-links"><a class="pop-link" href="${routeLink(s)}" ${ext}>🧭 Маршрут сюда</a>`+
-      `<a class="pop-link" href="${placeLink(s)}" ${ext}>Google Maps →</a></div>`+
-      `</div>`);
-    markers[d.n]=markers[d.n]||[];markers[d.n].push(m);
+  const start=hotelOf(DAYS[d.n-2]),night=hotelOf(d);
+  const line=[...(start?[[start.lat,start.lng]]:[]),...d.places.map(s=>[s.lat,s.lng])];
+  L.polyline(line,{color:col,weight:3,opacity:.5,dashArray:'4,8'}).addTo(dayLayer);
+  [start,night].forEach(h=>{if(h)L.marker([h.lat,h.lng],{icon:hotelIcon()}).addTo(dayLayer).bindTooltip('🏨 '+h.name,{className:'lbl',direction:'top',offset:[0,-14]});});
+  d.places.forEach(s=>{
+    L.marker([s.lat,s.lng],{icon:pinIcon(s.k,col,s.shop,sel===s),zIndexOffset:sel===s?1000:0}).addTo(dayLayer)
+      .bindTooltip(s.name,{className:'lbl perm',direction:'top',offset:[0,-28],permanent:true})
+      .on('click',()=>go(`d${d.n}-${s.i}`));
   });
-});
-
-// отели
-Object.keys(HOTELS).forEach(key=>{
-  const h=HOTELS[key];
-  if(h.tbd)return;
-  allPts.push([h.lat,h.lng]);
-  const icon=L.divIcon({className:'',html:`<div class="hpin">🏨</div>`,
-    iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-16]});
-  L.marker([h.lat,h.lng],{icon}).addTo(hotelLayer).bindPopup(
-    `<div class="pop-b">`+
-    `<div class="pop-day" style="color:${COLORS[h.ck]}">Отель · ${h.city} · ${h.nights}</div>`+
-    `<div class="pop-name">${h.name}</div>`+
-    `<div class="pop-note">${h.addr}<br>${h.ja||''}<br>Тел.: ${h.tel}</div>`+
-    `<div class="pop-tip">🛏 ${h.note}</div>`+
-    `<div class="pop-links"><a class="pop-link" href="${routeLink(h)}" ${ext}>🧭 Маршрут сюда</a>`+
-    `<a class="pop-link" href="${hotelLink(h)}" ${ext}>Google Maps →</a></div>`+
-    `</div>`);
-});
-
-L.polyline(routePts,{color:'#2c2a26',weight:2,opacity:.45,dashArray:'2,7',lineCap:'round'}).addTo(map);
-
-// кнопка «где я»
-let meMarker=null,meCircle=null;
-const Locate=L.Control.extend({options:{position:'topleft'},onAdd(){
-  const b=L.DomUtil.create('button','map-btn leaflet-bar');b.title='Где я';b.textContent='🎯';
-  L.DomEvent.disableClickPropagation(b);
-  b.onclick=()=>{b.textContent='⏳';map.locate({setView:true,maxZoom:15,enableHighAccuracy:true});};
-  map.on('locationfound',e=>{b.textContent='🎯';
-    if(!meMarker){meMarker=L.marker(e.latlng,{icon:L.divIcon({className:'',html:'<div class="me"></div>',iconSize:[16,16],iconAnchor:[8,8]}),zIndexOffset:1000}).addTo(map);
-      meCircle=L.circle(e.latlng,{radius:e.accuracy,color:'#2a7fff',weight:1,fillOpacity:.1}).addTo(map);}
-    else{meMarker.setLatLng(e.latlng);meCircle.setLatLng(e.latlng).setRadius(e.accuracy);}});
-  map.on('locationerror',()=>{b.textContent='🎯';b.title='Не удалось определить местоположение — разрешите доступ к геолокации';
-    b.style.background='#f6d5cc';setTimeout(()=>b.style.background='',2500);});
-  return b;}});
-new Locate().addTo(map);
-
-map.fitBounds(L.latLngBounds(allPts).pad(0.12));
-setTimeout(()=>map.invalidateSize(),200);
-if(pendingDay)focusDay(pendingDay,false);
+  if(!sel)fit([...line,...(night?[[night.lat,night.lng]]:[])]);
 }
 
-loadLeaflet([
-  'vendor/leaflet/leaflet.js',
-  'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js',
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'
-],initMap);
-
-// фильтр по городам
-const legend=document.getElementById('legend');
-[...Object.keys(CITY_NAMES).map(k=>({k,label:CITY_NAMES[k],dot:`<i style="background:${COLORS[k]}"></i>`})),
- {k:'hotels',label:'Отели',dot:'<i class="sq"></i>'},
- {k:'shops',label:'Магазины',dot:'🛍'}].forEach(o=>{
-  const b=document.createElement('button');b.innerHTML=o.dot+o.label;b.title='Показать/скрыть на карте';
-  b.onclick=()=>{
-    if(!map)return;
-    const lg=o.k==='hotels'?hotelLayer:o.k==='shops'?shopLayer:cityLayers[o.k];
-    if(map.hasLayer(lg)){map.removeLayer(lg);b.classList.add('off');}else{map.addLayer(lg);b.classList.remove('off');}
-  };
-  legend.appendChild(b);
-});
-legend.insertAdjacentHTML('beforeend','<div class="hint">Нажмите на город, чтобы скрыть или показать его точки</div>');
-
-// список дней
-const today=todayDay();
-const daysEl=document.getElementById('days');const dayEls={};
-DAYS.forEach(d=>{
+// ---------- маршрут между точками (OSRM, данные OpenStreetMap) ----------
+const legCache={};
+async function fetchLeg(a,b,profile){
+  const key=[a.lat,a.lng,b.lat,b.lng,profile].join();
+  if(legCache[key])return legCache[key];
+  const url=`https://routing.openstreetmap.de/routed-${profile}/route/v1/driving/${a.lng},${a.lat};${b.lng},${b.lat}?overview=full&geometries=geojson`;
+  const r=await fetch(url);if(!r.ok)throw new Error(r.status);
+  const j=await r.json();if(j.code!=='Ok')throw new Error(j.code);
+  const rt=j.routes[0];
+  return legCache[key]={line:rt.geometry.coordinates.map(c=>[c[1],c[0]]),dist:rt.distance,dur:rt.duration};
+}
+let legToken=0;
+async function showLeg(d,s,from){
+  const box=$('legInfo');if(!box)return;
+  const my=++legToken;
+  if(!from){box.innerHTML='';fit([[s.lat,s.lng]],15);return;}
+  const dist=km(from,s);
   const col=COLORS[d.ck];
-  const h=d.hotel?HOTELS[d.hotel]:null;
-  const el=document.createElement('div');el.className='day';el.id='day-'+d.n;
-  el.innerHTML=
-    `<div class="day-head">
-       <div class="day-num" style="background:${col}">${d.n}</div>
-       <div>
-         <div class="day-date">${d.date}${today===d?'<span class="today-badge">сегодня</span>':''}</div>
-         <div class="day-title">${d.title}</div>
-         <div class="day-city" style="color:${col}">${d.city}</div>
-       </div>
-     </div>`+
-     (d.holiday?`<div class="holiday">${d.holiday}</div>`:'')+
-     `<div class="stops">`+
-     d.stops.map(s=>s.move?
-       `<div class="move"><div class="ic">🚆</div><div>${s.time?`<span class="time">${s.time}</span> `:''}<b>${s.name}</b><br>${s.note}
-          ${s.tip?`<div class="tip">💡 ${s.tip}</div>`:''}</div></div>`:
-       `<div class="stop" style="border-left-color:${col}">
-          ${imgTag(s,'thumb','thumb-fb')}
-          <div class="b">
-            ${s.time?`<div class="time">🕘 ${s.time}</div>`:''}
-            <div class="s-name">${s.name}</div>
-            <div class="s-note">${s.note}${s.addr?`<br>📮 ${s.addr}`:''}</div>
-            ${s.tip?`<div class="tip"><b>💡 Лайфхак.</b> ${s.tip}</div>`:''}
-            <div class="links">
-              <a href="${routeLink(s)}" ${ext}>🧭 Маршрут сюда</a>
-              <a href="${placeLink(s)}" ${ext}>Открыть в картах →</a>
-            </div>
-          </div>
-        </div>`).join('')+
+  if(map){legLayer.clearLayers();}
+  if(dist>40){ // межгород — поезд, дороги не рисуем
+    box.innerHTML=`<div class="leg"><span class="ic">🚆</span><div>Поезд, ~${Math.round(dist)} км по прямой<small>подробности — выше и в Google Maps</small></div></div>`;
+    if(map){L.polyline([[from.lat,from.lng],[s.lat,s.lng]],{color:col,weight:4,opacity:.8,dashArray:'2,10'}).addTo(legLayer);fit([[from.lat,from.lng],[s.lat,s.lng]]);}
+    return;
+  }
+  const foot=dist<=2.5;
+  box.innerHTML=`<div class="leg"><span class="ic">⏳</span><div>Строю маршрут…</div></div>`;
+  if(map)fit([[from.lat,from.lng],[s.lat,s.lng]]);
+  try{
+    const leg=await fetchLeg(from,s,foot?'foot':'car');
+    if(my!==legToken)return;
+    box.innerHTML=foot
+      ?`<div class="leg"><span class="ic">🚶</span><div>Пешком ${fmtMin(leg.dur)}<small>${fmtKm(leg.dist)} · маршрут показан на карте</small></div></div>`
+      :`<div class="leg"><span class="ic">🚕</span><div>На такси ~${fmtMin(leg.dur*1.3)}<small>${fmtKm(leg.dist)} по дорогам · на метро/автобусе — кнопка ниже</small></div></div>`;
+    if(map){legLayer.clearLayers();
+      L.polyline(leg.line,{color:'#fff',weight:9,opacity:.9}).addTo(legLayer);
+      L.polyline(leg.line,{color:foot?'#2a7fff':col,weight:5,opacity:.95,dashArray:foot?'1,9':null,lineCap:'round'}).addTo(legLayer);
+      fit(leg.line);}
+  }catch(e){
+    if(my!==legToken)return;
+    box.innerHTML=`<div class="leg"><span class="ic">📏</span><div>~${dist.toFixed(1).replace('.',',')} км по прямой<small>маршрут не построился (нет сети?) — откройте Google Maps</small></div></div>`;
+    if(map)L.polyline([[from.lat,from.lng],[s.lat,s.lng]],{color:col,weight:4,dashArray:'2,10'}).addTo(legLayer);
+  }
+}
+
+// ---------- экраны панели ----------
+function chips(active){
+  const html=`<button class="chip all${!active?' on':''}" onclick="go('')">Все дни</button>`+
+    DAYS.map(d=>`<button class="chip${active===d?' on':''}${today===d?' today':''}" onclick="go('d${d.n}')">
+      <b>${d.n}</b><small>${d.iso.slice(8).replace(/^0/,'')} окт</small></button>`).join('');
+  $('chips').innerHTML=html;
+  const on=$('chips').querySelector('.on');if(on)on.scrollIntoView({inline:'center',block:'nearest'});
+}
+
+function viewAll(){
+  chips(null);
+  const until=daysUntilTrip();
+  $('content').innerHTML=
+    `<p class="intro">Выберите день — на карте появятся его места по порядку и маршрут. Нажмите на место, чтобы увидеть, как до него добраться.<br>
+      🎫 — примерные расходы на входы и транспорт на человека (без еды, такси и покупок). За всю поездку ≈${fmtYen(tripBudget())}.</p>`+
+    DAYS.map(d=>`<button class="dcard${today===d?' today':''}" onclick="go('d${d.n}')">
+      <span class="n" style="background:${COLORS[d.ck]}">${d.n}</span>
+      <span><span class="d">${d.date}${today===d?' · сегодня':''}</span><br><span class="t">${d.title}</span>
+        <span class="info-line"><span class="wxslot" data-n="${d.n}"></span>${dayBudget(d)?`<span>🎫 ≈${fmtYen(dayBudget(d))}</span>`:''}</span></span>
+      <span class="go">›</span></button>`).join('');
+  showAllOnMap();
+}
+
+function viewDay(d){
+  chips(d);
+  const col=COLORS[d.ck],h=hotelOf(d),hh=d.hotel?HOTELS[d.hotel]:null;
+  $('content').innerHTML=
+    `<button class="back" onclick="go('')">← Все дни</button>
+     <div class="dhead"><span class="n" style="background:${col}">${d.n}</span>
+       <div><div class="d">${d.date}${today===d?' · сегодня':''} · ${d.city}</div><h2>${d.title}</h2>
+         <div class="info-line"><span class="wxslot" data-n="${d.n}"></span>${dayBudget(d)?`<span>🎫 ≈${fmtYen(dayBudget(d))} входы и транспорт</span>`:''}</div></div></div>
+     ${d.holiday?`<div class="note-box">${d.holiday}</div>`:''}
+     <p class="hint">Нажмите на место — покажу дорогу к нему на карте.</p>
+     <div class="tl">`+
+     d.stops.map(s=>s.move
+       ?`<div class="mv"><span>🚆</span><span>${s.time?s.time+' · ':''}<b>${s.name}</b></span></div>`
+       :`<button class="row" onclick="go('d${d.n}-${s.i}')">
+          <span class="num" style="background:${col}">${s.k}</span>
+          <span class="tx"><span class="tm">${s.time||''}${s.shop?' · 🛍 магазин':''}${hoursWarn(s)?(hoursWarn(s).bad?' · ⛔ поздно':` · ⚠️ до ${s.close}`):''}</span><div class="nm">${s.name}</div><div class="sm">${firstSentence(s.note)}</div></span>
+          <span class="go">›</span></button>`).join('')+
      `</div>`+
-     (h?`<div class="hotel">
-            <div class="ic">${h.tbd?'❓':'🏨'}</div>
-            <div>
-              <div class="hn">${h.name}</div>
-              <div class="hm">${h.city} · ${h.nights}${h.tbd?'':' · '+h.tel}</div>
-              ${h.ja?`<div class="hja">🇯🇵 ${h.ja}</div>`:''}
-              <div class="hnote">${h.note}</div>
-              ${h.tbd?'':`<a href="${routeLink(h)}" ${ext}>🧭 Маршрут в отель</a><a href="${hotelLink(h)}" ${ext}>Отель на карте →</a>`}
-            </div>
-          </div>`:'');
-  el.addEventListener('click',e=>{
-    if(e.target.closest('a')||e.target.tagName==='IMG')return;
-    focusDay(d,true);
-  });
-  daysEl.appendChild(el);dayEls[d.n]=el;
-});
-
-function focusDay(d,fromClick){
-  document.querySelectorAll('.day').forEach(x=>x.classList.remove('active'));
-  dayEls[d.n].classList.add('active');
-  if(!fromClick)dayEls[d.n].scrollIntoView({block:'start'});
-  if(fromClick&&window.innerWidth<=760)hidePanel();
-  if(!map){pendingDay=d;return;}
-  const h=d.hotel?HOTELS[d.hotel]:null;
-  const pts=places(d).map(s=>[s.lat,s.lng]);
-  if(h&&!h.tbd)pts.push([h.lat,h.lng]);
-  if(pts.length===1){map.setView(pts[0],13);markers[d.n][0].openPopup();}
-  else{map.fitBounds(L.latLngBounds(pts).pad(0.5));}
+     (hh?`<div class="hotel"><span>${hh.tbd?'❓':'🏨'}</span><div>
+        <div class="hn">Ночь: ${hh.name}</div><div class="hm">${hh.nights}</div>
+        ${hh.ja?`<div class="ja">${hh.ja}</div>`:''}
+        ${hh.tbd?`<div class="hm" style="margin-top:5px">${hh.note}</div>`:`<a href="${gmDir(null,hh)}" ${ext}>🧭 Дорога в отель</a><a href="${hotelLink(hh)}" ${ext}>Отель в Google Maps</a>`}
+      </div></div>`:'')+
+     `<div class="daynav"><button ${d.n===1?'disabled':''} onclick="go('d${d.n-1}')">‹ День ${d.n-1||''}</button>
+       <button ${d.n===DAYS.length?'disabled':''} onclick="go('d${d.n+1}')">День ${d.n+1<=DAYS.length?d.n+1:''} ›</button></div>`;
+  $('content').scrollTop=0;
+  showDayOnMap(d,null);
 }
 
-// «Сегодня» и обратный отсчёт
-const cd=document.getElementById('countdown');const until=daysUntilTrip();
-if(today)cd.textContent=`Сегодня день ${today.n} из ${DAYS.length} · ${today.city}`;
-else if(until>0)cd.textContent=`До поездки ${until} ${plural(until,'день','дня','дней')}`;
-else cd.textContent='Поездка завершена — おつかれさま!';
-function plural(n,a,b,c){n=Math.abs(n)%100;const m=n%10;return n>10&&n<20?c:m===1?a:m>1&&m<5?b:c;}
-document.getElementById('todayBtn').onclick=()=>{
-  const d=today||(until>0?DAYS[0]:DAYS[DAYS.length-1]);
-  focusDay(d,false);
-  if(window.innerWidth<=760)hidePanel();
-};
-if(today)focusDay(today,false);
-bindThemeButton(document.getElementById('themeBtn'));
+function viewStop(d,s){
+  chips(d);
+  const {p:from,moves}=prevOf(d,s);
+  const pl=d.places,idx=pl.indexOf(s),prev=pl[idx-1],next=pl[idx+1];
+  $('content').innerHTML=
+    `<button class="back" onclick="go('d${d.n}')">← День ${d.n}: все места</button>
+     <div class="stop">
+       ${photo(s)}
+       <div class="meta">${s.time?'🕘 '+s.time+' · ':''}место ${s.k} из ${pl.length} · ${d.date}</div>
+       <h2>${s.name}</h2>
+       <p>${s.note}</p>
+       ${s.addr?`<div class="addr">📮 ${s.addr}</div>`:''}
+       ${s.hours||s.cost?`<div class="facts">${s.hours?`<div>🕐 <b>Часы:</b> ${s.hours}</div>`:''}${s.cost?`<div>🎫 <b>Цена:</b> ${s.cost}</div>`:''}<small>ориентировочно — сверьте перед визитом</small></div>`:''}
+       ${hoursWarn(s)?`<div class="warn${hoursWarn(s).bad?' bad':''}">${hoursWarn(s).text}</div>`:''}
+       ${s.tip?`<div class="tip">💡 ${s.tip}</div>`:''}
+       <div class="howto">
+         <h3>🧭 Как добраться</h3>
+         <div class="seg">
+           <button data-f="prev">${from?(from.hotel?'От отеля':'От предыдущего места'):'Первое место дня'}</button>
+           <button data-f="me">📍 От меня</button>
+         </div>
+         <div id="fromBox"></div>
+         <div id="legInfo"></div>
+         <div class="btns">
+           <a class="btn primary" id="gmBtn" href="#" ${ext}>🚇 Маршрут в Google Maps</a>
+           <a class="btn" href="${placeLink(s)}" ${ext}>Место на карте</a>
+         </div>
+       </div>
+       <div class="stopnav">
+         <button ${prev?'':'disabled'} onclick="go('d${d.n}-${prev?prev.i:''}')">‹ ${prev?prev.name:'—'}</button>
+         <button ${next?'':'disabled'} onclick="go('d${d.n}-${next?next.i:''}')">${next?next.name:'—'} ›</button>
+       </div>
+     </div>`;
+  $('content').scrollTop=0;
+  showDayOnMap(d,s);
+  const segs=[...$('content').querySelectorAll('.seg button')];
+  const setMode=mode=>{
+    store.set('routeFrom',mode);
+    segs.forEach(b=>b.classList.toggle('on',b.dataset.f===mode));
+    if(mode==='me'){
+      $('fromBox').innerHTML='';$('gmBtn').href=gmDir(null,s);
+      routeFromMe(d,s);
+    }else{
+      $('fromBox').innerHTML=(from?`<div class="from">от: <b>${from.hotel?'🏨 '+from.name:from.name}</b></div>`:'')+
+        moves.map(m=>`<div class="mvtxt">🚆 <b>${m.time?m.time+' · ':''}${m.name}</b><br>${m.note}${m.tip?'<br>💡 '+m.tip:''}</div>`).join('');
+      $('gmBtn').href=gmDir(from,s);
+      showLeg(d,s,from);
+    }
+  };
+  segs.forEach(b=>b.onclick=()=>setMode(b.dataset.f));
+  // во время поездки по умолчанию строим от текущего места, до неё — от предыдущей точки плана
+  setMode(store.get('routeFrom')||(today?'me':'prev'));
+}
 
-const panel=document.getElementById('panel');const toggle=document.getElementById('toggle');
-function hidePanel(){panel.classList.add('hidden');toggle.textContent='📋 Показать план';
-  if(map)setTimeout(()=>map.invalidateSize(),380);}
-function showPanel(){panel.classList.remove('hidden');toggle.textContent='🗺 Показать карту';}
-toggle.addEventListener('click',()=>{if(panel.classList.contains('hidden'))showPanel();else hidePanel();});
+// маршрут от текущего местоположения
+let myPos=null,myMarker=null;
+function routeFromMe(d,s){
+  const box=$('legInfo');const my=++legToken;
+  if(!navigator.geolocation){box.innerHTML=`<div class="leg"><span class="ic">🚫</span><div>Геолокация недоступна<small>используйте кнопку Google Maps ниже</small></div></div>`;return;}
+  box.innerHTML=`<div class="leg"><span class="ic">📡</span><div>Определяю, где вы…<small>разрешите доступ к местоположению, если браузер спросит</small></div></div>`;
+  navigator.geolocation.getCurrentPosition(p=>{
+    if(my!==legToken)return;
+    myPos={lat:p.coords.latitude,lng:p.coords.longitude,name:'Вы здесь'};
+    if(map){
+      const ic=L.divIcon({className:'',html:'<div class="me"></div>',iconSize:[16,16],iconAnchor:[8,8]});
+      if(myMarker)myMarker.setLatLng([myPos.lat,myPos.lng]);else myMarker=L.marker([myPos.lat,myPos.lng],{icon:ic,zIndexOffset:1000}).addTo(map);
+    }
+    const dist=km(myPos,s);
+    if(dist>150){
+      legLayer&&legLayer.clearLayers();
+      box.innerHTML=`<div class="leg"><span class="ic">🌏</span><div>Вы пока далеко — ${Math.round(dist).toLocaleString('ru')} км<small>в Японии здесь появится маршрут от вашего места</small></div></div>`;
+      return;
+    }
+    showLeg(d,s,myPos);
+  },()=>{
+    if(my!==legToken)return;
+    box.innerHTML=`<div class="leg"><span class="ic">🚫</span><div>Не удалось определить местоположение<small>разрешите доступ к геолокации в настройках браузера или нажмите «Маршрут в Google Maps»</small></div></div>`;
+  },{enableHighAccuracy:true,timeout:15000,maximumAge:60000});
+}
+
+// ---------- навигация через адрес (#d3, #d3-2) — работает кнопка «Назад» на телефоне ----------
+function go(h){if(location.hash.slice(1)===h)render();else location.hash=h;}
+let WX=null;
+function fillWx(){document.querySelectorAll('.wxslot').forEach(el=>el.innerHTML=wxHtml(DAYS[el.dataset.n-1],WX));}
+function render(){
+  render2();fillWx();
+}
+function render2(){
+  const m=location.hash.match(/^#d(\d+)(?:-(\d+))?$/);
+  const d=m&&DAYS[+m[1]-1];
+  if(!d){viewAll();return;}
+  const s=m[2]!==undefined?d.stops[+m[2]]:null;
+  if(s&&!s.move){setSheet('peek');viewStop(d,s);}
+  else{if($('sheet').dataset.state==='mini')setSheet('peek');viewDay(d);}
+}
+addEventListener('hashchange',render);
+
+// ---------- шторка на телефоне ----------
+const ORDER=['mini','peek','full'];
+function setSheet(st){if(!mobile())return;$('sheet').dataset.state=st;}
+// высота шторки по её состоянию (не ждём окончания анимации)
+function sheetH(){if(!mobile())return 0;const st=$('sheet').dataset.state;
+  return st==='mini'?168:st==='full'?innerHeight-56:innerHeight*.52;}
+(function(){
+  const g=$('grab');let y0=null;
+  g.addEventListener('click',()=>{const i=ORDER.indexOf($('sheet').dataset.state);setSheet(ORDER[(i+1)%3]);});
+  g.addEventListener('touchstart',e=>{y0=e.touches[0].clientY;},{passive:true});
+  g.addEventListener('touchend',e=>{if(y0===null)return;const dy=e.changedTouches[0].clientY-y0;y0=null;
+    if(Math.abs(dy)<25)return;const i=ORDER.indexOf($('sheet').dataset.state);
+    setSheet(ORDER[Math.max(0,Math.min(2,i+(dy<0?1:-1)))]);e.preventDefault();});
+})();
+
+// ---------- старт ----------
+const until=daysUntilTrip();
+$('countdown').textContent=today?`Сегодня день ${today.n} из ${DAYS.length} · ${today.city}`:
+  until>0?`До поездки ${until} ${until%10===1&&until%100!==11?'день':until%10>=2&&until%10<=4&&(until%100<10||until%100>=20)?'дня':'дней'}`:'Поездка завершена — おつかれさま!';
+bindThemeButton($('themeBtn'));
+if(!location.hash&&today)history.replaceState(null,'','#d'+today.n);
+render();
+loadWeather().then(w=>{WX=w;fillWx();});
+loadLeaflet(['vendor/leaflet/leaflet.js','https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js',
+  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'],initMap);
 </script>
 </body>
 </html>

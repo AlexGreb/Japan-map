@@ -30,5 +30,18 @@ body{background:var(--paper);color:var(--ink)}
 .pill:hover{background:rgba(244,239,230,.1)}
 .pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 
+/* погода, бюджет, часы работы */
+.wx{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;white-space:nowrap}
+.wx.clim{font-weight:500;color:var(--muted)}
+.info-line{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted);margin-top:6px}
+.warn{margin-top:8px;font-size:12.5px;font-weight:700;border-radius:8px;padding:7px 10px;background:#fff1d6;color:#7a4b00}
+.warn.bad{background:#fbe0da;color:#8f2412}
+:root[data-theme="dark"] .warn{background:#3a2d12;color:#f3c776}
+:root[data-theme="dark"] .warn.bad{background:#3d1a14;color:#f4a393}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .warn{background:#3a2d12;color:#f3c776}
+  :root:not([data-theme="light"]) .warn.bad{background:#3d1a14;color:#f4a393}
+}
+
 /* карта в тёмной теме */
 .dark-map .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.95) contrast(.9)}

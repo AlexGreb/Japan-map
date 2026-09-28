@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Япония · расписание</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Япония · план поездки</title>
 <script>try{const t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#2c2a26">
@@ -11,138 +11,141 @@
 <link rel="stylesheet" href="common.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth;scroll-padding-top:64px}
-  body{font-family:'Zen Kaku Gothic New',sans-serif}
-  header{background:var(--mast);color:var(--mast-fg);padding:26px 16px 22px}
-  .wrap{max-width:1100px;margin:0 auto}
-  .kicker{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px}
-  h1{font-family:'Shippori Mincho',serif;font-weight:800;font-size:28px;line-height:1.2}
-  .sub{margin-top:8px;font-size:13px;color:var(--gold);font-weight:700}
+  html{scroll-behavior:smooth;scroll-padding-top:60px}
+  body{font-family:'Zen Kaku Gothic New',sans-serif;line-height:1.45}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+  .wrap{max-width:760px;margin:0 auto;padding:0 16px}
+  header{background:var(--mast);color:var(--mast-fg);padding:18px 0 16px}
+  .hrow{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  h1{font-family:'Shippori Mincho',serif;font-weight:800;font-size:22px}
+  .sub{font-size:12.5px;color:var(--gold);font-weight:700;margin-top:3px}
+  .actions{display:flex;gap:4px}
+  .actions a,.actions button{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    font-size:17px;text-decoration:none;background:rgba(244,239,230,.08)}
   .tabs{position:sticky;top:0;z-index:10;background:var(--paper);border-bottom:1px solid var(--line)}
-  .tabs .wrap{display:flex;gap:4px;overflow-x:auto;padding:8px 16px}
-  .tabs a{flex:none;color:var(--ink);text-decoration:none;font-weight:700;font-size:13px;padding:7px 12px;border-radius:20px}
-  .tabs a:hover{background:var(--head-bg)}
-  main{padding:20px 16px 60px}
-  section{margin-bottom:40px}
-  h2{font-family:'Shippori Mincho',serif;font-size:22px;margin-bottom:6px}
-  .lead{color:var(--muted);font-size:13px;margin-bottom:14px;line-height:1.5}
-  .progress{height:6px;background:var(--line);border-radius:4px;overflow:hidden;margin:6px 0 14px;max-width:360px}
+  .tabs .wrap{display:flex;gap:2px;overflow-x:auto;padding-top:6px;padding-bottom:6px;scrollbar-width:none}
+  .tabs .wrap::-webkit-scrollbar{display:none}
+  .tabs a{flex:none;color:var(--ink);text-decoration:none;font-weight:700;font-size:13px;padding:7px 11px;border-radius:20px}
+  .tabs a.on{background:var(--ink);color:var(--paper)}
+  main{padding:18px 0 80px}
+  section{margin-bottom:34px}
+  h2{font-family:'Shippori Mincho',serif;font-size:21px;margin-bottom:4px}
+  .lead{color:var(--muted);font-size:13px;margin-bottom:12px}
+  .progress{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);margin-bottom:12px}
+  .progress .bar{flex:1;max-width:260px;height:6px;background:var(--line);border-radius:4px;overflow:hidden}
   .progress i{display:block;height:100%;background:var(--c-nara);transition:width .3s}
+  .summary{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .summary div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:12.5px}
+  .summary b{display:block;font-size:16px}
 
-  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);font-size:13.5px}
-  th{background:var(--head-bg);text-align:left;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:10px 12px;color:var(--muted)}
-  td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:top;line-height:1.45}
-  tr.dayrow td{background:var(--row-alt);border-top:2px solid var(--line);padding:12px}
-  tr.dayrow.today td{background:var(--today)}
-  .dn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
-    color:#fff;font:800 12px 'Shippori Mincho',serif;margin-right:10px;vertical-align:middle}
-  .dtitle{font-family:'Shippori Mincho',serif;font-weight:700;font-size:15.5px;vertical-align:middle}
-  .ddate{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--vermilion-deep);margin-left:10px;vertical-align:middle}
-  .badge{display:inline-block;margin-left:8px;background:var(--gold);color:#fff;border-radius:10px;padding:1px 8px;font-size:10px;letter-spacing:.06em;vertical-align:middle}
-  .holiday{margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--ink)}
-  .time{white-space:nowrap;font-weight:700;color:var(--muted)}
-  .name{font-weight:700}
-  .note{color:var(--muted);font-size:12.5px}
-  .tip{margin-top:4px;font-size:12px;color:var(--tip-fg)}
-  .city{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;white-space:nowrap}
-  tr.move td{background:transparent}
-  tr.move .name::before{content:"🚆 "}
-  tr.move .name{font-weight:500;color:var(--muted)}
-  tr.done .name,tr.done .note{text-decoration:line-through;opacity:.55}
-  tr.hotel td{background:#2c2a26;color:#f4efe6}
-  tr.hotel .note{color:rgba(244,239,230,.75)}
-  tr.hotel .time{color:rgba(244,239,230,.75)}
-  a.map{color:var(--vermilion-deep);font-weight:700;text-decoration:none;white-space:nowrap;font-size:12.5px;display:block}
-  tr.hotel a.map{color:var(--gold)}
-  input[type=checkbox]{width:18px;height:18px;accent-color:var(--c-nara);cursor:pointer}
-  td.chk{width:36px}
+  /* карточка дня */
+  .day{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+  .day.today{box-shadow:0 0 0 2px var(--gold)}
+  .dh{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:12px 14px}
+  .dh .n{flex:none;width:36px;height:36px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font:800 15px 'Shippori Mincho',serif}
+  .dh .d{font-size:11px;font-weight:700;color:var(--vermilion-deep);letter-spacing:.05em;text-transform:uppercase}
+  .dh .t{font-family:'Shippori Mincho',serif;font-weight:700;font-size:16px;line-height:1.3}
+  .dh .chev{margin-left:auto;color:var(--muted);font-size:14px;transition:transform .2s;align-self:center}
+  .day.open .dh .chev{transform:rotate(180deg)}
+  .db{display:none;padding:0 14px 14px;border-top:1px solid var(--line)}
+  .day.open .db{display:block}
+  .note-box{font-size:12.5px;background:var(--today);border-radius:10px;padding:9px 11px;margin-top:12px}
+  .it{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .it:last-of-type{border-bottom:none}
+  .it input{flex:none;width:20px;height:20px;margin-top:1px;accent-color:var(--c-nara);cursor:pointer}
+  .it .tm{font-size:11.5px;font-weight:700;color:var(--muted)}
+  .it .nm{font-weight:700;font-size:14.5px}
+  .it .nt{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .it .tp{font-size:12px;color:var(--tip-fg);background:var(--tip-bg);border-radius:8px;padding:6px 9px;margin-top:6px}
+  .it .lk{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
+  .it .lk a{font-size:12.5px;font-weight:700;color:var(--vermilion-deep);text-decoration:none}
+  .it.move .nm{font-weight:500;color:var(--muted);font-size:13px}
+  .it.done .nm,.it.done .nt{text-decoration:line-through;opacity:.5}
+  .hotel{display:flex;gap:10px;background:#2c2a26;color:#f4efe6;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:12.5px}
+  .hotel b{font-size:13.5px}
+  .hotel a{color:var(--gold);font-weight:700;text-decoration:none;margin-right:12px}
+  .expand{display:flex;gap:8px;margin-bottom:10px}
+  .expand button{font-size:12.5px;font-weight:700;color:var(--vermilion-deep)}
 
-  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
-  .card h3{font-size:15px;margin-bottom:8px;display:flex;gap:8px;align-items:center}
-  .card ul{padding-left:18px;font-size:13px;line-height:1.55}
+  /* прочие карточки */
+  .cards{display:grid;gap:10px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .card h3{font-size:15px;margin-bottom:6px}
+  .card ul{padding-left:18px;font-size:13px}
   .card li+li{margin-top:5px}
-  .bk{display:flex;gap:12px;align-items:flex-start}
+  .ck{display:flex;gap:10px;align-items:flex-start;padding:6px 0}
+  .ck input{flex:none;width:20px;height:20px;accent-color:var(--c-nara);cursor:pointer;margin-top:1px}
+  .ck.done span{text-decoration:line-through;opacity:.5}
   .bk .t{font-weight:700;font-size:14px}
   .bk .w{font-size:12px;color:var(--vermilion-deep);font-weight:700;margin-top:2px}
-  .bk .n{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.45}
+  .bk .n{font-size:12.5px;color:var(--muted);margin-top:4px}
   .bk a{font-size:12.5px;font-weight:700;color:var(--vermilion-deep);text-decoration:none;display:inline-block;margin-top:6px}
   .card.done{opacity:.55}
   .card.done .t{text-decoration:line-through}
-  .addr{font-size:20px;line-height:1.5;margin-top:4px;font-weight:700}
-  .addr-sub{font-size:12px;color:var(--muted)}
-
-  @media (max-width:760px){
-    table,tbody,tr,td{display:block;width:100%}
-    thead{display:none}
-    td{border-top:none;padding:3px 12px}
-    tr{border-top:1px solid var(--line);padding:8px 0;position:relative}
-    tr.dayrow{padding:0}
-    tr:not(.dayrow) td:first-child{position:absolute;right:4px;top:8px;width:auto}
-    tr:not(.dayrow) td:nth-child(2):empty,td.lnk:empty{display:none}
-    .city{display:none}
-  }
+  .addr{font-size:20px;font-weight:700;margin:4px 0}
+  .muted{font-size:12px;color:var(--muted)}
   @media print{
-    header{background:none;color:#000;padding:0 0 10px}
-    .pills,.tabs{display:none}
+    header .actions,.tabs,.expand{display:none}
+    .db{display:block!important}
     body{background:#fff;color:#000}
-    tr{break-inside:avoid}
+    .day,.card{break-inside:avoid}
   }
 </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <div class="kicker">Расписание · 11 дней</div>
-    <h1>Япония: когда и что посещаем</h1>
-    <div class="sub">7 – 17 октября <span id="countdown" style="color:rgba(244,239,230,.75);font-weight:500"></span></div>
-    <div class="pills">
-      <a class="pill" href="index.html">🗺 Карта</a>
-      <button class="pill" id="todayBtn">📍 Сегодня</button>
-      <button class="pill" onclick="window.print()">🖨 Печать / PDF</button>
-      <button class="pill" id="themeBtn" aria-label="Тема"></button>
-    </div>
+<header><div class="wrap hrow">
+  <div><h1>Япония: план поездки</h1><div class="sub">7–17 октября <span id="countdown" style="color:rgba(244,239,230,.75);font-weight:500"></span></div></div>
+  <div class="actions">
+    <a href="index.html" title="Карта">🗺</a>
+    <button onclick="window.print()" title="Печать / PDF">🖨</button>
+    <button id="themeBtn" aria-label="Тема"></button>
   </div>
-</header>
-<nav class="tabs"><div class="wrap">
-  <a href="#plan">📅 Расписание</a><a href="#bookings">🎫 Брони и билеты</a><a href="#shopping">🛒 Покупки</a><a href="#cheat">📖 Шпаргалка</a><a href="#hotels">🏨 Адреса для такси</a>
+</div></header>
+<nav class="tabs"><div class="wrap" id="tabs">
+  <a href="#plan">📅 План</a><a href="#bookings">🎫 Брони</a><a href="#shopping">🛒 Покупки</a>
+  <a href="#packing">🧳 Что взять</a><a href="#cheat">📖 Шпаргалка</a><a href="#hotels">🏨 Адреса</a>
 </div></nav>
 <main class="wrap">
   <section id="plan">
-    <h2>Расписание</h2>
-    <p class="lead">Время ориентировочное. Отмечайте галочкой, что уже посетили — отметки сохраняются на этом устройстве.</p>
-    <div class="progress"><i id="planBar"></i></div>
-    <table>
-      <thead><tr><th></th><th>Время</th><th>Место</th><th>Город</th><th></th></tr></thead>
-      <tbody id="rows"></tbody>
-    </table>
+    <h2>План по дням</h2>
+    <p class="lead">Нажмите на день, чтобы раскрыть. Отмечайте галочкой, что уже посетили: отметки сохраняются на этом телефоне. Время, часы работы и цены ориентировочные.</p>
+    <div class="summary" id="summary"></div>
+    <div class="progress"><span id="planTxt"></span><span class="bar"><i id="planBar"></i></span></div>
+    <div class="expand"><button id="openAll">Раскрыть все</button><button id="closeAll">Свернуть все</button></div>
+    <div id="days"></div>
   </section>
 
   <section id="bookings">
-    <h2>Брони и билеты</h2>
-    <p class="lead">Что купить или забронировать заранее. Отмечайте, что уже сделано.</p>
-    <div class="progress"><i id="bkBar"></i></div>
+    <h2>🎫 Брони и билеты</h2>
+    <p class="lead">Что купить или забронировать заранее.</p>
+    <div class="progress"><span id="bkTxt"></span><span class="bar"><i id="bkBar"></i></span></div>
     <div class="cards" id="bk"></div>
   </section>
 
   <section id="shopping">
     <h2>🛒 Покупки: Hard Off и Bookoff</h2>
-    <p class="lead">Что ищем в секонд-хендах 7 и 9 октября. Отмечайте купленное. Под каждой консолью — что проверить перед покупкой.</p>
-    <div class="progress"><i id="shBar"></i></div>
+    <p class="lead">Что ищем 7 и 9 октября и что проверить перед покупкой.</p>
+    <div class="progress"><span id="shTxt"></span><span class="bar"><i id="shBar"></i></span></div>
     <div class="cards" id="sh"></div>
-    <div class="card" style="margin-top:12px"><h3>💡 Советы</h3><ul id="shTips"></ul></div>
+    <div class="card" style="margin-top:10px"><h3>💡 Советы</h3><ul id="shTips"></ul></div>
+  </section>
+
+  <section id="packing">
+    <h2>🧳 Что взять с собой</h2>
+    <div class="progress"><span id="pkTxt"></span><span class="bar"><i id="pkBar"></i></span></div>
+    <div class="cards" id="pk"></div>
   </section>
 
   <section id="cheat">
-    <h2>Шпаргалка</h2>
+    <h2>📖 Шпаргалка</h2>
     <div class="cards" id="ch"></div>
   </section>
 
   <section id="hotels">
-    <h2>Адреса отелей для такси</h2>
+    <h2>🏨 Адреса отелей для такси</h2>
     <p class="lead">Покажите экран водителю. Сверьте адреса с подтверждением брони.</p>
     <div class="cards" id="ht"></div>
   </section>
@@ -150,93 +153,110 @@
 <script src="data.js"></script>
 <script src="common.js"></script>
 <script>
+const $=id=>document.getElementById(id);
 const ext='target="_blank" rel="noopener"';
 const today=todayDay();
+DAYS.forEach(d=>{let k=0;d.stops.forEach((s,i)=>{s.i=i;if(!s.move)s.k=++k;});d.places=d.stops.filter(s=>!s.move);});
 
-// расписание
-const rows=[];
-DAYS.forEach(d=>{
-  const col=COLORS[d.ck];
-  rows.push(`<tr class="dayrow${today===d?' today':''}" id="d${d.n}"><td colspan="5">
-    <span class="dn" style="background:${col}">${d.n}</span><span class="dtitle">${d.title}</span><span class="ddate">${d.date}</span>${today===d?'<span class="badge">сегодня</span>':''}
-    ${d.holiday?`<div class="holiday">${d.holiday}</div>`:''}</td></tr>`);
-  d.stops.forEach((s,i)=>{
-    const key=`done:${d.n}-${i}`;
-    rows.push(`<tr class="${s.move?'move':''}" data-key="${key}">
-    <td class="chk"><input type="checkbox" aria-label="Сделано"></td>
-    <td class="time">${s.time||''}</td>
-    <td><div class="name">${s.shop?'🛍 ':''}${s.name}</div><div class="note">${s.note}${s.addr?`<br>📮 ${s.addr}`:''}</div>${s.tip?`<div class="tip">💡 ${s.tip}</div>`:''}</td>
-    <td class="city" style="color:${col}">${s.move?'':d.city}</td>
-    <td class="lnk">${s.move?'':`<a class="map" href="${routeLink(s)}" ${ext}>🧭 Маршрут</a><a class="map" href="${placeLink(s)}" ${ext}>На карте →</a>`}</td></tr>`);
-  });
-  const h=d.hotel&&HOTELS[d.hotel];
-  if(h)rows.push(`<tr class="hotel">
-    <td class="chk"></td>
-    <td class="time">🏨 ночь</td>
-    <td><div class="name">${h.name}</div><div class="note">${h.nights}${h.addr?' · '+h.addr:''}</div></td>
-    <td class="city">${h.city}</td>
-    <td class="lnk">${h.tbd?'':`<a class="map" href="${hotelLink(h)}" ${ext}>Отель →</a>`}</td></tr>`);
-});
-document.getElementById('rows').innerHTML=rows.join('');
+// сводка
+$('summary').innerHTML=`<div>Дней<b>${DAYS.length}</b></div><div>Мест<b>${DAYS.reduce((a,d)=>a+d.places.length,0)}</b></div>
+  <div>Входы и транспорт<b>≈${fmtYen(tripBudget())}</b><span class="muted">на человека, без еды и такси</span></div>`;
 
-// галочки — сохраняем в браузере
-function bindChecks(sel,rowSel,bar){
-  const boxes=[...document.querySelectorAll(sel)];
+// дни
+$('days').innerHTML=DAYS.map(d=>{
+  const col=COLORS[d.ck],h=d.hotel&&HOTELS[d.hotel];
+  return `<div class="day${today===d?' today':''}" id="d${d.n}">
+    <button class="dh" onclick="toggleDay(${d.n})">
+      <span class="n" style="background:${col}">${d.n}</span>
+      <span><span class="d">${d.date}${today===d?' · сегодня':''}</span><br><span class="t">${d.title}</span>
+        <span class="info-line"><span class="wxslot" data-n="${d.n}"></span>${dayBudget(d)?`<span>🎫 ≈${fmtYen(dayBudget(d))}</span>`:''}<span class="cnt" data-n="${d.n}"></span></span></span>
+      <span class="chev">▼</span>
+    </button>
+    <div class="db">
+      ${d.holiday?`<div class="note-box">${d.holiday}</div>`:''}
+      ${d.stops.map(s=>{const w=hoursWarn(s);return `<div class="it${s.move?' move':''}" data-key="done:${d.n}-${s.i}">
+        <input type="checkbox" aria-label="Сделано">
+        <div style="flex:1;min-width:0">
+          <div class="tm">${s.time||''}${s.move?' · 🚆 переезд':s.shop?' · 🛍 магазин':''}</div>
+          <div class="nm">${s.move?'':s.k+'. '}${s.name}</div>
+          <div class="nt">${s.note}${s.addr?`<br>📮 ${s.addr}`:''}</div>
+          ${s.hours||s.cost?`<div class="info-line">${s.hours?`<span>🕐 ${s.hours}</span>`:''}${s.cost?`<span>🎫 ${s.cost}</span>`:''}</div>`:''}
+          ${w?`<div class="warn${w.bad?' bad':''}">${w.text}</div>`:''}
+          ${s.tip?`<div class="tp">💡 ${s.tip}</div>`:''}
+          ${s.move?'':`<div class="lk"><a href="index.html#d${d.n}-${s.i}">🗺 Как добраться</a><a href="${placeLink(s)}" ${ext}>Google Maps</a></div>`}
+        </div></div>`;}).join('')}
+      ${h?`<div class="hotel"><span>${h.tbd?'❓':'🏨'}</span><div><b>Ночь: ${h.name}</b><br>${h.nights}${h.addr?' · '+h.addr:''}
+        ${h.tbd?'':`<br><a href="${hotelLink(h)}" ${ext}>Отель в Google Maps</a>`}</div></div>`:''}
+    </div></div>`;}).join('');
+
+function toggleDay(n,force){const el=$('d'+n);const open=force!==undefined?force:!el.classList.contains('open');
+  el.classList.toggle('open',open);
+  const o=[...document.querySelectorAll('.day.open')].map(x=>x.id);store.set('openDays',JSON.stringify(o));}
+$('openAll').onclick=()=>DAYS.forEach(d=>toggleDay(d.n,true));
+$('closeAll').onclick=()=>DAYS.forEach(d=>toggleDay(d.n,false));
+// какие дни раскрыты: сохранённые, иначе — сегодняшний (или первый до поездки)
+let opened=[];try{opened=JSON.parse(store.get('openDays')||'[]');}catch(e){}
+if(!opened.length)opened=['d'+(today?today.n:1)];
+opened.forEach(id=>{const el=$(id);if(el)el.classList.add('open');});
+
+// галочки
+function bindChecks(rootSel,rowSel,bar,txt,onChange){
+  const boxes=[...document.querySelectorAll(rootSel+' input[type=checkbox]')];
   const upd=()=>{const n=boxes.filter(b=>b.checked).length;
-    document.getElementById(bar).style.width=(boxes.length?n/boxes.length*100:0)+'%';};
-  boxes.forEach(b=>{
-    const row=b.closest(rowSel);const key=row.dataset.key;
+    $(bar).style.width=(boxes.length?n/boxes.length*100:0)+'%';$(txt).textContent=`${n} из ${boxes.length}`;onChange&&onChange();};
+  boxes.forEach(b=>{const row=b.closest(rowSel),key=row.dataset.key;
     b.checked=store.get(key)==='1';row.classList.toggle('done',b.checked);
-    b.addEventListener('change',()=>{store.set(key,b.checked?'1':null);row.classList.toggle('done',b.checked);upd();});
-  });
+    b.addEventListener('change',()=>{store.set(key,b.checked?'1':null);row.classList.toggle('done',b.checked);upd();});});
   upd();
 }
-bindChecks('#rows input[type=checkbox]','tr','planBar');
+function dayCounts(){DAYS.forEach(d=>{const bs=[...$('d'+d.n).querySelectorAll('.it:not(.move) input')];
+  const n=bs.filter(b=>b.checked).length;document.querySelector(`.cnt[data-n="${d.n}"]`).textContent=n?`✅ ${n}/${bs.length}`:'';});}
+bindChecks('#days','.it','planBar','planTxt',dayCounts);
 
 // брони
-document.getElementById('bk').innerHTML=BOOKINGS.map(b=>`
-  <div class="card" data-key="booked:${b.id}"><div class="bk">
-    <input type="checkbox" aria-label="Готово">
-    <div><div class="t">${b.title}</div><div class="w">⏰ ${b.when}</div><div class="n">${b.note}</div>
-    ${b.url?`<a href="${b.url}" ${ext}>Официальный сайт →</a>`:''}</div>
-  </div></div>`).join('');
-bindChecks('#bk input[type=checkbox]','.card','bkBar');
+$('bk').innerHTML=BOOKINGS.map(b=>`<div class="card" data-key="booked:${b.id}"><div class="ck bk">
+  <input type="checkbox" aria-label="Готово"><div><div class="t">${b.title}</div><div class="w">⏰ ${b.when}</div><div class="n">${b.note}</div>
+  ${b.url?`<a href="${b.url}" ${ext}>Официальный сайт →</a>`:''}</div></div></div>`).join('');
+bindChecks('#bk','.card','bkBar','bkTxt');
 
 // покупки
-document.getElementById('sh').innerHTML=SHOPPING.map(p=>`
-  <div class="card" data-key="bought:${p.id}"><div class="bk">
-    <input type="checkbox" aria-label="Куплено">
-    <div><div class="t">🎮 ${p.title}</div>
-      <div class="w"><span lang="ja">${p.ja}</span> · ${p.model}</div>
-      <div class="n">${p.note}</div>
-      <div class="n"><b>Проверить:</b><ul style="padding-left:18px;margin-top:3px">${p.check.map(c=>`<li>${c}</li>`).join('')}</ul></div>
-      ${p.ideas?`<div class="n"><b>Идеи — играбельно без японского:</b> ${p.ideas.join(' · ')}</div>`:''}
-    </div>
-  </div></div>`).join('');
-bindChecks('#sh input[type=checkbox]','.card','shBar');
-document.getElementById('shTips').innerHTML=SHOPPING_TIPS.map(t=>`<li>${t}</li>`).join('');
+$('sh').innerHTML=SHOPPING.map(p=>`<div class="card" data-key="bought:${p.id}"><div class="ck bk">
+  <input type="checkbox" aria-label="Куплено"><div><div class="t">🎮 ${p.title}</div>
+  <div class="w"><span lang="ja">${p.ja}</span> · ${p.model}</div><div class="n">${p.note}</div>
+  <div class="n"><b>Проверить:</b><ul style="margin-top:3px">${p.check.map(c=>`<li>${c}</li>`).join('')}</ul></div>
+  ${p.ideas?`<div class="n"><b>Идеи — играбельно без японского:</b> ${p.ideas.join(' · ')}</div>`:''}</div></div></div>`).join('');
+bindChecks('#sh','.card','shBar','shTxt');
+$('shTips').innerHTML=SHOPPING_TIPS.map(t=>`<li>${t}</li>`).join('');
+
+// что взять
+$('pk').innerHTML=PACKING.map((g,gi)=>`<div class="card"><h3>${g.icon} ${g.title}</h3>
+  ${g.items.map((t,i)=>`<label class="ck" data-key="pack:${gi}-${i}"><input type="checkbox"><span>${t}</span></label>`).join('')}</div>`).join('');
+bindChecks('#pk','.ck','pkBar','pkTxt');
 
 // шпаргалка
-document.getElementById('ch').innerHTML=CHEAT.map(c=>`
-  <div class="card"><h3><span>${c.icon}</span>${c.title}</h3><ul>${c.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('');
+$('ch').innerHTML=CHEAT.map(c=>`<div class="card"><h3>${c.icon} ${c.title}</h3><ul>${c.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('');
 
-// адреса отелей
-document.getElementById('ht').innerHTML=Object.values(HOTELS).map(h=>h.tbd?
-  `<div class="card"><h3>❓ ${h.city}</h3><div class="addr-sub">${h.nights} · отель ещё не выбран</div></div>`:
-  `<div class="card"><h3>🏨 ${h.city} <span class="addr-sub">${h.nights}</span></h3>
-    <div class="addr" lang="ja">${h.ja||h.addr}</div>
-    <div class="addr-sub">${h.name}<br>${h.addr} · ${h.tel}</div>
-    <a class="map" style="margin-top:8px" href="${routeLink(h)}" ${ext}>🧭 Маршрут в отель</a></div>`).join('');
+// адреса
+$('ht').innerHTML=Object.values(HOTELS).map(h=>h.tbd
+  ?`<div class="card"><h3>❓ ${h.city}</h3><div class="muted">${h.nights} · отель ещё не выбран</div></div>`
+  :`<div class="card"><h3>🏨 ${h.city} <span class="muted">${h.nights}</span></h3>
+     <div class="addr" lang="ja">${h.ja||h.addr}</div><div class="muted">${h.name}<br>${h.addr} · ${h.tel}</div></div>`).join('');
 
-// сегодня
+// погода
+let WX=null;
+const fillWx=()=>document.querySelectorAll('.wxslot').forEach(el=>el.innerHTML=wxHtml(DAYS[el.dataset.n-1],WX));
+fillWx();loadWeather().then(w=>{WX=w;fillWx();});
+
+// подсветка вкладки при прокрутке
+const tabs=[...document.querySelectorAll('#tabs a')];
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)tabs.forEach(a=>a.classList.toggle('on',a.hash==='#'+e.target.id));}),
+  {rootMargin:'-40% 0px -55% 0px'});
+document.querySelectorAll('section').forEach(s=>io.observe(s));
+
 const until=daysUntilTrip();
-document.getElementById('countdown').textContent=today?` · сегодня день ${today.n}`:until>0?` · до поездки ${until} дн.`:'';
-document.getElementById('todayBtn').onclick=()=>{
-  const d=today||(until>0?DAYS[0]:DAYS[DAYS.length-1]);
-  document.getElementById('d'+d.n).scrollIntoView({behavior:'smooth',block:'start'});
-};
-if(today&&!location.hash)setTimeout(()=>document.getElementById('d'+today.n).scrollIntoView({block:'start'}),50);
-bindThemeButton(document.getElementById('themeBtn'));
+$('countdown').textContent=today?` · сегодня день ${today.n}`:until>0?` · до поездки ${until} дн.`:'';
+if(today&&!location.hash)setTimeout(()=>$('d'+today.n).scrollIntoView({block:'start'}),50);
+bindThemeButton($('themeBtn'));
 </script>
 </body>
 </html>

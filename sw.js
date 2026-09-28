@@ -1,6 +1,6 @@
 // Офлайн-режим: при первом открытии сохраняет страницу, фото и основу карты в телефоне.
 // После изменения файлов увеличьте VERSION, чтобы телефоны забрали новую версию.
-const VERSION='v1';
+const VERSION='v2';
 
 const IMGS=['akihabara.png','arashiyama.jpg','dotonbori.jpg','fushimi-inari.jpg','imperial-palace.jpg','kamakura.jpg',
   'kinkakuji.jpg','kiyomizu.jpg','meiji.jpg','nara-park.jpg','osaka-castle.jpg','sensoji.jpg','shibuya.jpg',
