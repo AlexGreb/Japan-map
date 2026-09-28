@@ -15,7 +15,7 @@ const DAYS=[
     img:'img/dotonbori.jpg'},
    {time:'21:00',name:'BOOKOFF PLUS Namba Ebisubashi',lat:34.6677,lng:135.5013,fb:'📚',fbc:'#d4762a',shop:true,
     note:'Секонд-хенд: книги, манга, игры, диски, фигурки. 2–3 этаж здания 大阪B&Vビル, у южного конца моста Эбису-баси — прямо по пути с Дотонбори.',
-    tip:'Часы работы проверьте в Google Maps перед выходом — в день прилёта можно не успеть, тогда зайдите 9 окт. Tax-free от 5000¥ — возьмите паспорт. Список покупок — в разделе «🛒 Покупки».',
+    tip:'Часы работы проверьте в Google Maps перед выходом — в день прилёта можно не успеть, тогда зайдите 9 окт. Tax-free от 5000¥ — возьмите паспорт. Список покупок — во вкладке «Списки → Покупки».',
     addr:'大阪B&Vビル 2・3F, 1-5-16 Namba, Chuo-ku, Osaka',
     url:'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent('BOOKOFF PLUS Namba Ebisubashi')},
    {time:'21:45',name:'BOOKOFF Osaka Shinsaibashi',lat:34.6765122,lng:135.5015041,fb:'📚',fbc:'#d4762a',shop:true,
@@ -41,7 +41,7 @@ const DAYS=[
     img:'img/osaka-castle.jpg'},
    {time:'10:15',name:'HARD OFF Osaka Taisho',lat:34.6469911,lng:135.4713548,fb:'🎸',fbc:'#d4762a',shop:true,
     note:'Ближайший Hard Off к отелю: б/у электроника, гитары и музыкальное оборудование, ретро-консоли и игры, фотоаппараты. На улице Taisho-dori.',
-    tip:'От замка ~25 мин на такси; от отеля ~15 мин на такси или автобусе по Taisho-dori (маршрут — в Google Maps). Hard Off обычно открывается в 10:00 — сверьте часы. Список покупок (Game Boy, DS Lite) — в разделе «🛒 Покупки» расписания. Tax-free от 5000¥ по паспорту.',
+    tip:'От замка ~25 мин на такси; от отеля ~15 мин на такси или автобусе по Taisho-dori (маршрут — в Google Maps). Hard Off обычно открывается в 10:00 — сверьте часы. Список покупок (Game Boy, DS Lite) — во вкладке «Списки → Покупки». Tax-free от 5000¥ по паспорту.',
     addr:'3-4-14 Kobayashihigashi, Taisho-ku, Osaka 551-0011',
     url:'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent('Hard Off Osaka Taisho Store')},
    {time:'11:45',name:'Рынок Куромон',lat:34.6653508,lng:135.5062413,fb:'🦐',fbc:'#d4762a',
@@ -323,6 +323,28 @@ const EXTRA={
  'Отель → аэропорт':{cost:'≈500–700¥ до Ханэды · ≈1 300–3 300¥ до Нариты',yen:600},
 };
 DAYS.forEach(d=>d.stops.forEach(s=>Object.assign(s,EXTRA[s.name]||{})));
+
+// Типы мест — свой значок и цвет на карте
+const CATS={
+ temple:{icon:'⛩️',color:'#c8462b',name:'Храм, святилище'},
+ nature:{icon:'🌳',color:'#2f8a3e',name:'Парк, сад, природа'},
+ food:  {icon:'🍣',color:'#e07b12',name:'Рынок, еда'},
+ shop:  {icon:'🛍️',color:'#2463d6',name:'Магазин'},
+ fun:   {icon:'🎢',color:'#b0359f',name:'Парк развлечений'},
+ sight: {icon:'🏯',color:'#7a4e24',name:'Замок, дворец'},
+ city:  {icon:'🏙️',color:'#44506a',name:'Город, прогулка'},
+ air:   {icon:'✈️',color:'#5d6b7a',name:'Аэропорт'},
+};
+const PLACE_TYPE={
+ 'Дотонбори':'city','BOOKOFF PLUS Namba Ebisubashi':'shop','BOOKOFF Osaka Shinsaibashi':'shop','HARD OFF Osaka Taisho':'shop',
+ 'Universal Studios Japan':'fun','Осакский замок':'sight','Рынок Куромон':'food','Рынок Нисики / Гион':'food','Рынок Тоёсу':'food',
+ 'Кинкаку-дзи (Золотой павильон)':'temple','Киёмидзу-дэра':'temple','Фусими Инари':'temple','Храм Тодай-дзи':'temple',
+ 'Касуга-тайся':'temple','Храм Сэнсо-дзи':'temple','Святилище Мэйдзи':'temple','Большой Будда (Котоку-ин)':'temple',
+ 'Бамбуковая роща Арасияма':'nature','Парк Нара':'nature','Сад Синдзюку-Гёэн':'nature',
+ 'Восточные сады Императорского дворца':'sight','Перекрёсток Сибуя':'city','Акихабара':'shop',
+ 'Аэропорт (Ханэда / Нарита)':'air',
+};
+DAYS.forEach(d=>d.stops.forEach(s=>{if(!s.move)s.type=PLACE_TYPE[s.name]||'city';}));
 
 // Погода «обычно в эти дни» — если прогноз ещё недоступен (средние за середину октября)
 const CLIMATE={osaka:{max:24,min:16},kyoto:{max:24,min:14},nara:{max:24,min:13},tokyo:{max:22,min:15}};

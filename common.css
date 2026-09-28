@@ -1,47 +1,42 @@
-/* Общие цвета и тёмная тема для index.html и schedule.html */
+/* Общие стили: цвета, светлая/тёмная тема, крупный читаемый шрифт */
 :root{
-  --paper:#f4efe6;--ink:#21201c;--vermilion:#c8462b;--vermilion-deep:#9e3120;
-  --sumi:#2c2a26;--gold:#b08a3e;--line:#d8cfbf;--card:#ffffff;--muted:#6b665c;
-  --tip-bg:#eef4ea;--tip-fg:#3f6b34;--tip-b:#2f5226;--head-bg:#ebe4d6;--row-alt:#f8f4ec;
-  --today:#fff4d6;--mast:#2c2a26;--mast-fg:#f4efe6;--ph:#e7e0d2;
-  --c-osaka:#d4762a;--c-nara:#5a8b4c;--c-kyoto:#c8462b;--c-tokyo:#6a4a8c;
+  --bg:#f2f3f5;--card:#ffffff;--ink:#111418;--muted:#4a5260;--faint:#6b7280;--line:#e1e4e8;
+  --accent:#d93b3b;--accent-soft:#fdecec;--ok:#1f9d55;
+  --tip-bg:#eaf7ee;--tip-fg:#14532d;--warn-bg:#fff4d6;--warn-fg:#7a4b00;--bad-bg:#fde2dd;--bad-fg:#8f2412;
+  --hi:#fff6dc;--chip:#e9ebef;--shadow:0 1px 2px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.06);
+  --tabh:64px;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --paper:#17161a;--ink:#ece6da;--vermilion:#e0674b;--vermilion-deep:#f08a6e;
-    --line:#34312c;--card:#211f1d;--muted:#a59e91;
-    --tip-bg:#1f2b1c;--tip-fg:#a8d39a;--tip-b:#c3e6b7;--head-bg:#26231f;--row-alt:#1d1b19;
-    --today:#3a3120;--mast:#0e0d0f;--ph:#2a2724;color-scheme:dark;
+    --bg:#0e1013;--card:#1a1d22;--ink:#f2f4f7;--muted:#b4bac4;--faint:#8b929c;--line:#2b2f36;
+    --accent:#ff6464;--accent-soft:#3a1d1d;--ok:#3ecf7a;
+    --tip-bg:#15291c;--tip-fg:#a7e8bd;--warn-bg:#352812;--warn-fg:#f5cf82;--bad-bg:#3d1a14;--bad-fg:#f7a99a;
+    --hi:#2e2716;--chip:#262a31;--shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+    color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --paper:#17161a;--ink:#ece6da;--vermilion:#e0674b;--vermilion-deep:#f08a6e;
-  --line:#34312c;--card:#211f1d;--muted:#a59e91;
-  --tip-bg:#1f2b1c;--tip-fg:#a8d39a;--tip-b:#c3e6b7;--head-bg:#26231f;--row-alt:#1d1b19;
-  --today:#3a3120;--mast:#0e0d0f;--ph:#2a2724;color-scheme:dark;
+  --bg:#0e1013;--card:#1a1d22;--ink:#f2f4f7;--muted:#b4bac4;--faint:#8b929c;--line:#2b2f36;
+  --accent:#ff6464;--accent-soft:#3a1d1d;--ok:#3ecf7a;
+  --tip-bg:#15291c;--tip-fg:#a7e8bd;--warn-bg:#352812;--warn-fg:#f5cf82;--bad-bg:#3d1a14;--bad-fg:#f7a99a;
+  --hi:#2e2716;--chip:#262a31;--shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+  color-scheme:dark;
 }
-body{background:var(--paper);color:var(--ink)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans JP","Hiragino Sans",sans-serif;
+  font-size:16px;line-height:1.5}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+a{color:inherit}
+[lang="ja"]{font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic","Meiryo",system-ui,sans-serif}
 
-/* кнопки-«пилюли» в шапке */
-.pill{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid rgba(244,239,230,.35);
-  color:var(--mast-fg);padding:6px 13px;border-radius:30px;font:700 12.5px 'Zen Kaku Gothic New',sans-serif;
-  text-decoration:none;cursor:pointer;position:relative;z-index:1}
-.pill:hover{background:rgba(244,239,230,.1)}
-.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-
-/* погода, бюджет, часы работы */
-.wx{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;white-space:nowrap}
+/* погода, бюджет, предупреждения */
+.wx{display:inline-flex;align-items:center;gap:4px;font-weight:600;white-space:nowrap}
 .wx.clim{font-weight:500;color:var(--muted)}
-.info-line{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted);margin-top:6px}
-.warn{margin-top:8px;font-size:12.5px;font-weight:700;border-radius:8px;padding:7px 10px;background:#fff1d6;color:#7a4b00}
-.warn.bad{background:#fbe0da;color:#8f2412}
-:root[data-theme="dark"] .warn{background:#3a2d12;color:#f3c776}
-:root[data-theme="dark"] .warn.bad{background:#3d1a14;color:#f4a393}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]) .warn{background:#3a2d12;color:#f3c776}
-  :root:not([data-theme="light"]) .warn.bad{background:#3d1a14;color:#f4a393}
-}
+.warn{margin-top:10px;font-size:15px;font-weight:600;border-radius:12px;padding:10px 12px;background:var(--warn-bg);color:var(--warn-fg)}
+.warn.bad{background:var(--bad-bg);color:var(--bad-fg)}
 
 /* карта в тёмной теме */
 .dark-map .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.95) contrast(.9)}
