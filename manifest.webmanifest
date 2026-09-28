@@ -1,0 +1,11 @@
+{
+  "name": "Япония · 7–17 октября",
+  "short_name": "Япония",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4efe6",
+  "theme_color": "#2c2a26",
+  "lang": "ru",
+  "icons": [{"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}]
+}

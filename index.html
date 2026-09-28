@@ -4,93 +4,109 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Япония · 11 дней · 7–17 октября</title>
+<script>try{const t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2c2a26">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="common.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --paper:#f4efe6;--ink:#21201c;--vermilion:#c8462b;--vermilion-deep:#9e3120;
-    --sumi:#2c2a26;--gold:#b08a3e;--line:#d8cfbf;
-    --c-osaka:#d4762a;--c-nara:#5a8b4c;--c-kyoto:#c8462b;--c-tokyo:#6a4a8c;
-  }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
-  body{font-family:'Zen Kaku Gothic New',sans-serif;background:var(--paper);color:var(--ink);overflow:hidden}
+  body{font-family:'Zen Kaku Gothic New',sans-serif;overflow:hidden}
   body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.035;
     background-image:radial-gradient(var(--ink) .5px,transparent .5px);background-size:4px 4px}
-  .app{display:flex;height:100vh;width:100vw}
+  .app{display:flex;height:100vh;height:100dvh;width:100vw}
   .panel{width:404px;flex:none;height:100%;overflow-y:auto;background:var(--paper);
     border-right:1px solid var(--line);box-shadow:4px 0 24px rgba(0,0,0,.06);z-index:500}
   .panel::-webkit-scrollbar{width:8px}
   .panel::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
-  .masthead{padding:26px 26px 22px;background:var(--sumi);color:var(--paper);position:relative;overflow:hidden}
+  .masthead{padding:26px 26px 22px;background:var(--mast);color:var(--mast-fg);position:relative;overflow:hidden}
   .masthead::after{content:"旅";position:absolute;right:-10px;top:-30px;font-family:'Shippori Mincho',serif;
     font-size:160px;font-weight:800;color:rgba(244,239,230,.06);line-height:1}
   .kicker{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:10px}
   .masthead h1{font-family:'Shippori Mincho',serif;font-weight:800;font-size:30px;line-height:1.15;letter-spacing:.01em}
   .masthead .dates{margin-top:10px;font-size:13px;color:var(--gold);font-weight:700;letter-spacing:.04em}
   .masthead .route{margin-top:8px;font-size:12.5px;color:rgba(244,239,230,.7);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-  .masthead .route b{color:var(--paper);font-weight:700}
+  .masthead .route b{color:var(--mast-fg);font-weight:700}
   .masthead .route span{color:var(--vermilion);font-weight:700}
-  .sched-link{display:inline-block;margin-top:14px;position:relative;z-index:1;color:var(--paper);font-size:12.5px;font-weight:700;
-    text-decoration:none;border:1px solid rgba(244,239,230,.35);padding:6px 13px;border-radius:30px}
-  .sched-link:hover{background:rgba(244,239,230,.1)}
-  .legend{display:flex;gap:13px;flex-wrap:wrap;padding:14px 26px;border-bottom:1px solid var(--line);font-size:12px;font-weight:500}
-  .legend i{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
-  .legend i.sq{border-radius:3px;background:var(--sumi)}
+  .countdown{margin-top:10px;font-size:12px;color:rgba(244,239,230,.75)}
+  .legend{display:flex;gap:6px;flex-wrap:wrap;padding:12px 22px;border-bottom:1px solid var(--line);font-size:12px;font-weight:500}
+  .legend button{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);color:var(--ink);
+    border-radius:20px;padding:5px 10px;font:500 12px 'Zen Kaku Gothic New',sans-serif;cursor:pointer}
+  .legend button.off{opacity:.4;text-decoration:line-through}
+  .legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .legend i.sq{border-radius:3px;background:var(--sumi);border:1px solid var(--muted)}
+  .legend .hint{width:100%;font-size:11px;color:var(--muted);margin-top:2px}
   .days{padding:8px 0 40px}
-  .day{border-bottom:1px solid var(--line);padding:16px 22px;cursor:pointer;transition:background .2s}
+  .day{border-bottom:1px solid var(--line);padding:16px 22px;cursor:pointer;transition:background .2s;scroll-margin-top:8px}
   .day:hover{background:rgba(200,70,43,.05)}
   .day.active{background:rgba(200,70,43,.08);box-shadow:inset 4px 0 0 var(--vermilion)}
   .day-head{display:flex;align-items:baseline;gap:12px}
   .day-num{font-family:'Shippori Mincho',serif;font-weight:800;font-size:13px;color:#fff;background:var(--sumi);
     width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:2px}
   .day-date{font-size:11px;letter-spacing:.1em;font-weight:700;color:var(--vermilion-deep);text-transform:uppercase}
+  .today-badge{display:inline-block;margin-left:6px;background:var(--gold);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;letter-spacing:.06em}
   .day-title{font-family:'Shippori Mincho',serif;font-weight:700;font-size:16px;line-height:1.3;margin-top:2px}
   .day-city{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-top:3px}
+  .holiday{margin:10px 0 0 42px;font-size:12px;line-height:1.45;background:var(--today);border-radius:8px;padding:8px 10px}
   .stops{margin:12px 0 0 42px;display:flex;flex-direction:column;gap:12px}
-  .stop{background:#fff;border:1px solid var(--line);border-left:3px solid var(--c-kyoto);
+  .stop{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--c-kyoto);
     border-radius:9px;overflow:hidden;box-shadow:0 2px 7px rgba(0,0,0,.06)}
-  .thumb{width:100%;height:140px;object-fit:cover;display:block;background:#e7e0d2}
+  .thumb{width:100%;height:140px;object-fit:cover;display:block;background:var(--ph)}
   .thumb-fb{width:100%;height:120px;display:flex;align-items:center;justify-content:center;
     font-size:42px;color:rgba(255,255,255,.95)}
   .stop .b{padding:10px 13px 13px}
+  .time{display:inline-block;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.04em;margin-bottom:2px}
   .stop .s-name{font-weight:700;font-size:14px;line-height:1.25}
-  .stop .s-note{font-size:12px;color:#6b665c;line-height:1.45;margin-top:4px}
-  .tip{margin-top:6px;font-size:11.5px;color:#3f6b34;background:#eef4ea;border-radius:6px;padding:5px 8px;line-height:1.4}
-  .tip b{color:#2f5226}
-  .stop a{display:inline-block;margin-top:8px;color:var(--vermilion-deep);font-size:11.5px;font-weight:700;
-    text-decoration:none;border-bottom:1px solid transparent}
-  .stop a:hover{border-bottom-color:var(--vermilion-deep)}
+  .stop .s-note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:4px}
+  .tip{margin-top:6px;font-size:11.5px;color:var(--tip-fg);background:var(--tip-bg);border-radius:6px;padding:5px 8px;line-height:1.4}
+  .tip b{color:var(--tip-b)}
+  .links{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+  .links a{color:var(--vermilion-deep);font-size:11.5px;font-weight:700;text-decoration:none;border-bottom:1px solid transparent}
+  .links a:hover{border-bottom-color:var(--vermilion-deep)}
+  .move{display:flex;gap:10px;align-items:flex-start;font-size:12px;line-height:1.45;color:var(--muted);
+    border:1px dashed var(--line);border-radius:9px;padding:8px 11px}
+  .move .ic{font-size:16px;line-height:1.2}
+  .move b{color:var(--ink)}
   .hotel{margin:10px 0 0 42px;display:flex;gap:10px;align-items:flex-start;background:#2c2a26;color:#f4efe6;
     border-radius:9px;padding:11px 13px}
   .hotel .ic{font-size:20px;line-height:1;flex:none;margin-top:1px}
   .hotel .hn{font-weight:700;font-size:13px;line-height:1.3}
   .hotel .hm{font-size:11px;color:rgba(244,239,230,.62);margin-top:2px}
+  .hotel .hja{font-size:12px;color:#f4efe6;margin-top:5px}
   .hotel .hnote{font-size:11px;color:rgba(244,239,230,.82);margin-top:5px;line-height:1.4}
-  .hotel a{display:inline-block;margin-top:6px;color:var(--gold);font-size:11px;font-weight:700;text-decoration:none}
-  .foot{padding:18px 26px;font-size:11.5px;color:#8a8478;line-height:1.5}
+  .hotel a{display:inline-block;margin-top:6px;margin-right:12px;color:var(--gold);font-size:11px;font-weight:700;text-decoration:none}
+  .foot{padding:18px 26px;font-size:11.5px;color:var(--muted);line-height:1.5}
   #map{flex:1;height:100%;background:#cdd9d3;z-index:1}
   .leaflet-container{font-family:'Zen Kaku Gothic New',sans-serif}
   .pin{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50% 50% 50% 0;
     transform:rotate(-45deg);border:2.5px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.35);
     font-weight:800;font-size:12px;color:#fff;font-family:'Shippori Mincho',serif}
   .pin span{transform:rotate(45deg)}
+  .pin.shop{font-size:14px;border-style:dashed}
   .hpin{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;
-    border:2.5px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.4);background:var(--sumi);font-size:15px}
-  .leaflet-popup-content-wrapper{border-radius:6px;box-shadow:0 6px 24px rgba(0,0,0,.2)}
+    border:2.5px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.4);background:#2c2a26;font-size:15px}
+  .me{width:16px;height:16px;border-radius:50%;background:#2a7fff;border:3px solid #fff;box-shadow:0 0 0 2px rgba(42,127,255,.35),0 2px 6px rgba(0,0,0,.4)}
+  .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--ink)}
+  .leaflet-popup-content-wrapper{border-radius:6px;box-shadow:0 6px 24px rgba(0,0,0,.2);overflow:hidden;padding:0}
   .leaflet-popup-content{margin:0;font-size:13px;line-height:1.5;width:235px!important}
   .pop-img{width:100%;height:130px;object-fit:cover;display:block}
   .pop-fb{width:100%;height:110px;display:flex;align-items:center;justify-content:center;font-size:42px;color:#fff}
   .pop-b{padding:11px 14px 13px}
   .pop-day{font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--vermilion)}
   .pop-name{font-family:'Shippori Mincho',serif;font-weight:700;font-size:16px;margin:3px 0 5px}
-  .pop-note{color:#5f5a50;margin-bottom:6px;font-size:12.5px}
-  .pop-tip{font-size:12px;color:#3f6b34;background:#eef4ea;border-radius:6px;padding:6px 9px;margin-bottom:8px;line-height:1.4}
-  .pop-link{color:var(--vermilion-deep);font-weight:700;text-decoration:none;font-size:12px}
+  .pop-note{color:var(--muted);margin-bottom:6px;font-size:12.5px}
+  .pop-tip{font-size:12px;color:var(--tip-fg);background:var(--tip-bg);border-radius:6px;padding:6px 9px;margin-bottom:8px;line-height:1.4}
+  .pop-links{display:flex;gap:12px;flex-wrap:wrap}
+  .pop-link{color:var(--vermilion-deep)!important;font-weight:700;text-decoration:none;font-size:12px}
+  .map-btn{background:var(--card);color:var(--ink);border:none;width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .map-btn:hover{background:var(--paper)}
   .toggle{display:none;position:fixed;z-index:1000;bottom:20px;left:50%;transform:translateX(-50%);
-    background:var(--sumi);color:var(--paper);border:none;padding:13px 22px;border-radius:40px;
+    background:var(--sumi);color:#f4efe6;border:none;padding:13px 22px;border-radius:40px;
     font-weight:700;font-size:14px;font-family:'Zen Kaku Gothic New',sans-serif;
     box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;letter-spacing:.03em}
   @media (max-width:760px){
@@ -99,6 +115,7 @@
     .panel.hidden{transform:translateY(100%)}
     #map{height:100%;width:100%}
     .toggle{display:block}
+    .days{padding-bottom:90px}
   }
 </style>
 </head>
@@ -112,19 +129,22 @@
       <div class="route">
         <b>Осака</b><span>→</span><b>Киото</b><span>→</span><b>Нара</b>♨️<span>→</span><b>Токио</b>
       </div>
-      <a class="sched-link" href="schedule.html">📅 Расписание таблицей →</a>
+      <div class="countdown" id="countdown"></div>
+      <div class="pills">
+        <button class="pill" id="todayBtn">📍 Сегодня</button>
+        <a class="pill" href="schedule.html">📅 Расписание</a>
+        <a class="pill" href="schedule.html#bookings">🎫 Брони</a>
+        <a class="pill" href="schedule.html#shopping">🛒 Покупки</a>
+        <a class="pill" href="schedule.html#cheat">📖 Шпаргалка</a>
+        <button class="pill" id="themeBtn" aria-label="Тема"></button>
+      </div>
     </div>
-    <div class="legend">
-      <div><i style="background:var(--c-osaka)"></i>Осака</div>
-      <div><i style="background:var(--c-kyoto)"></i>Киото</div>
-      <div><i style="background:var(--c-nara)"></i>Нара</div>
-      <div><i style="background:var(--c-tokyo)"></i>Токио</div>
-      <div><i class="sq"></i>Отели</div>
-    </div>
+    <div class="legend" id="legend"></div>
     <div class="days" id="days"></div>
     <div class="foot">
-      Нажмите на день, точку или отель, чтобы приблизить карту. Ссылки ведут в Google Maps.<br><br>
-      Дни недели — для октября 2026 г. Зелёные плашки — лайфхаки. Фото и основа карты хранятся локально, подробная карта подгружается из интернета.
+      Нажмите на день, точку или отель, чтобы приблизить карту. «Маршрут сюда» строит путь в Google Maps от того места, где вы сейчас.<br><br>
+      Время — ориентировочное. Дни недели — для октября 2026 г. Зелёные плашки — лайфхаки.
+      Фото и основа карты хранятся локально; открыв страницу один раз с интернетом, её можно смотреть и без сети.
     </div>
   </aside>
   <div id="map"></div>
@@ -132,41 +152,39 @@
 <button class="toggle" id="toggle">🗺 Показать карту</button>
 
 <script src="data.js"></script>
+<script src="common.js"></script>
 <script>
-
-function linkFor(s){return s.url?s.url:('https://www.google.com/maps/search/?api=1&query='+s.lat+','+s.lng);}
-function hlink(h){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(h.name.replace('♨️','').trim())+'&query_place_id='+h.pid;}
 // если фото не загрузилось — показываем цветную плашку с эмодзи
 function imgFail(el,cls){const d=document.createElement('div');d.className=cls;
   d.style.background=el.dataset.c;d.textContent=el.dataset.e;el.replaceWith(d);}
 function imgTag(s,cls,fbCls){
   const c=s.fbc||COLORS.kyoto,e=s.fb||'📍';
-  return s.img?`<img class="${cls}" src="${s.img}" alt="" loading="lazy" referrerpolicy="no-referrer" data-c="${c}" data-e="${e}" onerror="imgFail(this,'${fbCls}')">`
+  return s.img?`<img class="${cls}" src="${s.img}" alt="" loading="lazy" data-c="${c}" data-e="${e}" onerror="imgFail(this,'${fbCls}')">`
               :`<div class="${fbCls}" style="background:${c}">${e}</div>`;}
-function imgPopup(s){return imgTag(s,'pop-img','pop-fb');}
-function imgCard(s){return imgTag(s,'thumb','thumb-fb');}
+const places=d=>d.stops.filter(s=>!s.move);
+const ext='target="_blank" rel="noopener"';
 
-// Leaflet: пробуем несколько CDN по очереди
+// Leaflet: локальная копия, затем CDN по очереди
 function loadLeaflet(srcs,done){
   if(window.L)return done();
   if(!srcs.length){document.getElementById('map').innerHTML=
-    '<div style="padding:40px;text-align:center;color:#6b665c">Не удалось загрузить карту — проверьте интернет/VPN и обновите страницу.</div>';return;}
+    '<div style="padding:40px;text-align:center;color:var(--muted)">Не удалось загрузить карту — обновите страницу.</div>';return;}
   const s=document.createElement('script');s.src=srcs[0];
   s.onload=done;s.onerror=()=>loadLeaflet(srcs.slice(1),done);
   document.head.appendChild(s);
 }
 
-let map=null;const markers={};
+let map=null;const markers={};const cityLayers={};let hotelLayer=null,shopLayer=null;let pendingDay=null;
 
 function initMap(){
-map=L.map('map',{scrollWheelZoom:true}).setView([35.2,137.0],6);
-map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>'); // без флага
+map=L.map('map',{scrollWheelZoom:true,zoomControl:true}).setView([35.2,137.0],6);
+map.attributionControl.setPrefix('<a href="https://leafletjs.com" '+ext+'>Leaflet</a>'); // без флага
 
 // локальная подложка (папка tiles/, масштабы 4–9) лежит снизу и видна, если интернет-тайлы не грузятся
 L.tileLayer('tiles/{z}/{x}/{y}.png',{minZoom:0,maxZoom:19,minNativeZoom:4,maxNativeZoom:9,
   bounds:[[30,128],[44,146]],attribution:'&copy; OpenStreetMap'}).addTo(map);
 
-// подложки: если одна не грузится — переключаемся на следующую (CARTO не используем — требует API-ключ)
+// подложки из интернета: если одна не грузится — переключаемся на следующую (CARTO не используем — требует API-ключ)
 const TILES=[
   ['https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap'}],
   ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{attribution:'&copy; Esri'}]
@@ -181,54 +199,78 @@ function setTiles(i){
 }
 setTiles(0);
 
-const allPts=[];const routePts=[];
+// тёмная тема для карты
+const applyMapTheme=()=>document.getElementById('map').classList.toggle('dark-map',isDark());
+applyMapTheme();document.addEventListener('themechange',applyMapTheme);
+if(window.matchMedia)matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',applyMapTheme);
 
-// attraction markers
+const allPts=[];const routePts=[];
+Object.keys(COLORS).forEach(k=>cityLayers[k]=L.layerGroup().addTo(map));
+hotelLayer=L.layerGroup().addTo(map);
+shopLayer=L.layerGroup().addTo(map);
+
+// точки достопримечательностей
 DAYS.forEach(d=>{
   const col=COLORS[d.ck];
-  d.stops.forEach(s=>{
+  places(d).forEach(s=>{
     routePts.push([s.lat,s.lng]);allPts.push([s.lat,s.lng]);
     const icon=L.divIcon({className:'',
-      html:`<div class="pin" style="background:${col}"><span>${d.n}</span></div>`,
+      html:s.shop?`<div class="pin shop" style="background:${col}"><span>🛍</span></div>`
+                 :`<div class="pin" style="background:${col}"><span>${d.n}</span></div>`,
       iconSize:[30,30],iconAnchor:[15,28],popupAnchor:[0,-28]});
-    const m=L.marker([s.lat,s.lng],{icon}).addTo(map);
+    const m=L.marker([s.lat,s.lng],{icon}).addTo(s.shop?shopLayer:cityLayers[d.ck]);
     m.bindPopup(
-      imgPopup(s)+
+      imgTag(s,'pop-img','pop-fb')+
       `<div class="pop-b">`+
-      `<div class="pop-day" style="color:${col}">День ${d.n} · ${d.date} · ${d.city}</div>`+
+      `<div class="pop-day" style="color:${col}">День ${d.n} · ${d.date}${s.time?' · '+s.time:''}</div>`+
       `<div class="pop-name">${s.name}</div>`+
-      `<div class="pop-note">${s.note}</div>`+
+      `<div class="pop-note">${s.note}${s.addr?`<br>📮 ${s.addr}`:''}</div>`+
       (s.tip?`<div class="pop-tip">💡 ${s.tip}</div>`:'')+
-      `<a class="pop-link" href="${linkFor(s)}" target="_blank" rel="noopener">Открыть в Google Maps →</a>`+
+      `<div class="pop-links"><a class="pop-link" href="${routeLink(s)}" ${ext}>🧭 Маршрут сюда</a>`+
+      `<a class="pop-link" href="${placeLink(s)}" ${ext}>Google Maps →</a></div>`+
       `</div>`);
     markers[d.n]=markers[d.n]||[];markers[d.n].push(m);
   });
 });
 
-// hotel markers
-const hotelMarkers={};
+// отели
 Object.keys(HOTELS).forEach(key=>{
   const h=HOTELS[key];
   if(h.tbd)return;
   allPts.push([h.lat,h.lng]);
   const icon=L.divIcon({className:'',html:`<div class="hpin">🏨</div>`,
     iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-16]});
-  const m=L.marker([h.lat,h.lng],{icon}).addTo(map);
-  m.bindPopup(
+  L.marker([h.lat,h.lng],{icon}).addTo(hotelLayer).bindPopup(
     `<div class="pop-b">`+
     `<div class="pop-day" style="color:${COLORS[h.ck]}">Отель · ${h.city} · ${h.nights}</div>`+
     `<div class="pop-name">${h.name}</div>`+
-    `<div class="pop-note">${h.addr}<br>Тел.: ${h.tel}</div>`+
+    `<div class="pop-note">${h.addr}<br>${h.ja||''}<br>Тел.: ${h.tel}</div>`+
     `<div class="pop-tip">🛏 ${h.note}</div>`+
-    `<a class="pop-link" href="${hlink(h)}" target="_blank" rel="noopener">Открыть в Google Maps →</a>`+
+    `<div class="pop-links"><a class="pop-link" href="${routeLink(h)}" ${ext}>🧭 Маршрут сюда</a>`+
+    `<a class="pop-link" href="${hotelLink(h)}" ${ext}>Google Maps →</a></div>`+
     `</div>`);
-  hotelMarkers[key]=m;
 });
 
 L.polyline(routePts,{color:'#2c2a26',weight:2,opacity:.45,dashArray:'2,7',lineCap:'round'}).addTo(map);
+
+// кнопка «где я»
+let meMarker=null,meCircle=null;
+const Locate=L.Control.extend({options:{position:'topleft'},onAdd(){
+  const b=L.DomUtil.create('button','map-btn leaflet-bar');b.title='Где я';b.textContent='🎯';
+  L.DomEvent.disableClickPropagation(b);
+  b.onclick=()=>{b.textContent='⏳';map.locate({setView:true,maxZoom:15,enableHighAccuracy:true});};
+  map.on('locationfound',e=>{b.textContent='🎯';
+    if(!meMarker){meMarker=L.marker(e.latlng,{icon:L.divIcon({className:'',html:'<div class="me"></div>',iconSize:[16,16],iconAnchor:[8,8]}),zIndexOffset:1000}).addTo(map);
+      meCircle=L.circle(e.latlng,{radius:e.accuracy,color:'#2a7fff',weight:1,fillOpacity:.1}).addTo(map);}
+    else{meMarker.setLatLng(e.latlng);meCircle.setLatLng(e.latlng).setRadius(e.accuracy);}});
+  map.on('locationerror',()=>{b.textContent='🎯';b.title='Не удалось определить местоположение — разрешите доступ к геолокации';
+    b.style.background='#f6d5cc';setTimeout(()=>b.style.background='',2500);});
+  return b;}});
+new Locate().addTo(map);
+
 map.fitBounds(L.latLngBounds(allPts).pad(0.12));
-// на мобильных карта скрыта под панелью — пересчитать размер при показе
 setTimeout(()=>map.invalidateSize(),200);
+if(pendingDay)focusDay(pendingDay,false);
 }
 
 loadLeaflet([
@@ -238,30 +280,53 @@ loadLeaflet([
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'
 ],initMap);
 
-// sidebar
-const daysEl=document.getElementById('days');
+// фильтр по городам
+const legend=document.getElementById('legend');
+[...Object.keys(CITY_NAMES).map(k=>({k,label:CITY_NAMES[k],dot:`<i style="background:${COLORS[k]}"></i>`})),
+ {k:'hotels',label:'Отели',dot:'<i class="sq"></i>'},
+ {k:'shops',label:'Магазины',dot:'🛍'}].forEach(o=>{
+  const b=document.createElement('button');b.innerHTML=o.dot+o.label;b.title='Показать/скрыть на карте';
+  b.onclick=()=>{
+    if(!map)return;
+    const lg=o.k==='hotels'?hotelLayer:o.k==='shops'?shopLayer:cityLayers[o.k];
+    if(map.hasLayer(lg)){map.removeLayer(lg);b.classList.add('off');}else{map.addLayer(lg);b.classList.remove('off');}
+  };
+  legend.appendChild(b);
+});
+legend.insertAdjacentHTML('beforeend','<div class="hint">Нажмите на город, чтобы скрыть или показать его точки</div>');
+
+// список дней
+const today=todayDay();
+const daysEl=document.getElementById('days');const dayEls={};
 DAYS.forEach(d=>{
   const col=COLORS[d.ck];
   const h=d.hotel?HOTELS[d.hotel]:null;
-  const el=document.createElement('div');el.className='day';
+  const el=document.createElement('div');el.className='day';el.id='day-'+d.n;
   el.innerHTML=
     `<div class="day-head">
-       <div class="day-num">${d.n}</div>
+       <div class="day-num" style="background:${col}">${d.n}</div>
        <div>
-         <div class="day-date">${d.date}</div>
+         <div class="day-date">${d.date}${today===d?'<span class="today-badge">сегодня</span>':''}</div>
          <div class="day-title">${d.title}</div>
          <div class="day-city" style="color:${col}">${d.city}</div>
        </div>
-     </div>
-     <div class="stops">`+
-     d.stops.map(s=>
+     </div>`+
+     (d.holiday?`<div class="holiday">${d.holiday}</div>`:'')+
+     `<div class="stops">`+
+     d.stops.map(s=>s.move?
+       `<div class="move"><div class="ic">🚆</div><div>${s.time?`<span class="time">${s.time}</span> `:''}<b>${s.name}</b><br>${s.note}
+          ${s.tip?`<div class="tip">💡 ${s.tip}</div>`:''}</div></div>`:
        `<div class="stop" style="border-left-color:${col}">
-          ${imgCard(s)}
+          ${imgTag(s,'thumb','thumb-fb')}
           <div class="b">
+            ${s.time?`<div class="time">🕘 ${s.time}</div>`:''}
             <div class="s-name">${s.name}</div>
-            <div class="s-note">${s.note}</div>
+            <div class="s-note">${s.note}${s.addr?`<br>📮 ${s.addr}`:''}</div>
             ${s.tip?`<div class="tip"><b>💡 Лайфхак.</b> ${s.tip}</div>`:''}
-            <a href="${linkFor(s)}" target="_blank" rel="noopener">Открыть в картах →</a>
+            <div class="links">
+              <a href="${routeLink(s)}" ${ext}>🧭 Маршрут сюда</a>
+              <a href="${placeLink(s)}" ${ext}>Открыть в картах →</a>
+            </div>
           </div>
         </div>`).join('')+
      `</div>`+
@@ -270,23 +335,44 @@ DAYS.forEach(d=>{
             <div>
               <div class="hn">${h.name}</div>
               <div class="hm">${h.city} · ${h.nights}${h.tbd?'':' · '+h.tel}</div>
+              ${h.ja?`<div class="hja">🇯🇵 ${h.ja}</div>`:''}
               <div class="hnote">${h.note}</div>
-              ${h.tbd?'':`<a href="${hlink(h)}" target="_blank" rel="noopener">Отель на карте →</a>`}
+              ${h.tbd?'':`<a href="${routeLink(h)}" ${ext}>🧭 Маршрут в отель</a><a href="${hotelLink(h)}" ${ext}>Отель на карте →</a>`}
             </div>
           </div>`:'');
   el.addEventListener('click',e=>{
-    if(e.target.tagName==='A'||e.target.tagName==='IMG')return;
-    document.querySelectorAll('.day').forEach(x=>x.classList.remove('active'));
-    el.classList.add('active');
-    if(window.innerWidth<=760)hidePanel();
-    if(!map)return;
-    const pts=d.stops.map(s=>[s.lat,s.lng]);
-    if(h&&!h.tbd)pts.push([h.lat,h.lng]);
-    if(pts.length===1){map.setView(pts[0],13);markers[d.n][0].openPopup();}
-    else{map.fitBounds(L.latLngBounds(pts).pad(0.5));}
+    if(e.target.closest('a')||e.target.tagName==='IMG')return;
+    focusDay(d,true);
   });
-  daysEl.appendChild(el);
+  daysEl.appendChild(el);dayEls[d.n]=el;
 });
+
+function focusDay(d,fromClick){
+  document.querySelectorAll('.day').forEach(x=>x.classList.remove('active'));
+  dayEls[d.n].classList.add('active');
+  if(!fromClick)dayEls[d.n].scrollIntoView({block:'start'});
+  if(fromClick&&window.innerWidth<=760)hidePanel();
+  if(!map){pendingDay=d;return;}
+  const h=d.hotel?HOTELS[d.hotel]:null;
+  const pts=places(d).map(s=>[s.lat,s.lng]);
+  if(h&&!h.tbd)pts.push([h.lat,h.lng]);
+  if(pts.length===1){map.setView(pts[0],13);markers[d.n][0].openPopup();}
+  else{map.fitBounds(L.latLngBounds(pts).pad(0.5));}
+}
+
+// «Сегодня» и обратный отсчёт
+const cd=document.getElementById('countdown');const until=daysUntilTrip();
+if(today)cd.textContent=`Сегодня день ${today.n} из ${DAYS.length} · ${today.city}`;
+else if(until>0)cd.textContent=`До поездки ${until} ${plural(until,'день','дня','дней')}`;
+else cd.textContent='Поездка завершена — おつかれさま!';
+function plural(n,a,b,c){n=Math.abs(n)%100;const m=n%10;return n>10&&n<20?c:m===1?a:m>1&&m<5?b:c;}
+document.getElementById('todayBtn').onclick=()=>{
+  const d=today||(until>0?DAYS[0]:DAYS[DAYS.length-1]);
+  focusDay(d,false);
+  if(window.innerWidth<=760)hidePanel();
+};
+if(today)focusDay(today,false);
+bindThemeButton(document.getElementById('themeBtn'));
 
 const panel=document.getElementById('panel');const toggle=document.getElementById('toggle');
 function hidePanel(){panel.classList.add('hidden');toggle.textContent='📋 Показать план';

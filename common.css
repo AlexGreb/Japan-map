@@ -1,0 +1,34 @@
+/* Общие цвета и тёмная тема для index.html и schedule.html */
+:root{
+  --paper:#f4efe6;--ink:#21201c;--vermilion:#c8462b;--vermilion-deep:#9e3120;
+  --sumi:#2c2a26;--gold:#b08a3e;--line:#d8cfbf;--card:#ffffff;--muted:#6b665c;
+  --tip-bg:#eef4ea;--tip-fg:#3f6b34;--tip-b:#2f5226;--head-bg:#ebe4d6;--row-alt:#f8f4ec;
+  --today:#fff4d6;--mast:#2c2a26;--mast-fg:#f4efe6;--ph:#e7e0d2;
+  --c-osaka:#d4762a;--c-nara:#5a8b4c;--c-kyoto:#c8462b;--c-tokyo:#6a4a8c;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#17161a;--ink:#ece6da;--vermilion:#e0674b;--vermilion-deep:#f08a6e;
+    --line:#34312c;--card:#211f1d;--muted:#a59e91;
+    --tip-bg:#1f2b1c;--tip-fg:#a8d39a;--tip-b:#c3e6b7;--head-bg:#26231f;--row-alt:#1d1b19;
+    --today:#3a3120;--mast:#0e0d0f;--ph:#2a2724;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#17161a;--ink:#ece6da;--vermilion:#e0674b;--vermilion-deep:#f08a6e;
+  --line:#34312c;--card:#211f1d;--muted:#a59e91;
+  --tip-bg:#1f2b1c;--tip-fg:#a8d39a;--tip-b:#c3e6b7;--head-bg:#26231f;--row-alt:#1d1b19;
+  --today:#3a3120;--mast:#0e0d0f;--ph:#2a2724;color-scheme:dark;
+}
+body{background:var(--paper);color:var(--ink)}
+
+/* кнопки-«пилюли» в шапке */
+.pill{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid rgba(244,239,230,.35);
+  color:var(--mast-fg);padding:6px 13px;border-radius:30px;font:700 12.5px 'Zen Kaku Gothic New',sans-serif;
+  text-decoration:none;cursor:pointer;position:relative;z-index:1}
+.pill:hover{background:rgba(244,239,230,.1)}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+
+/* карта в тёмной теме */
+.dark-map .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.95) contrast(.9)}
